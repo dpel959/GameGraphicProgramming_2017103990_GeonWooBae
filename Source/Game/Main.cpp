@@ -44,7 +44,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     if (FAILED(InitWindow(hInstance, nCmdShow))) {
         DWORD dwError = GetLastError();
 
-        MessageBox(nullptr, L"Failed :", L"Initialize Window", NULL);
+        MessageBox(nullptr, L"Initialize Window", L"FAILED", NULL);
 
         if (dwError != ERROR_CLASS_ALREADY_EXISTS) {
             return HRESULT_FROM_WIN32(dwError);
@@ -54,9 +54,11 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     }
 
     if (FAILED(InitDevice())) {
+        CleanupDevice();
+
         DWORD dwError = GetLastError();
 
-        MessageBox(nullptr, L"Failed :", L"Initialize Device", NULL);
+        MessageBox(nullptr, L"Initialize Device", L"FAILED", NULL);
 
         if (dwError != ERROR_CLASS_ALREADY_EXISTS) {
             return HRESULT_FROM_WIN32(dwError);
