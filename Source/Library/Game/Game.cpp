@@ -12,9 +12,7 @@ namespace library
 
 	  Modifies: [m_pszGameName, m_mainWindow, m_renderer].
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Game::Game definition (remove the comment)
-	--------------------------------------------------------------------*/
+
 	Game::Game(_In_ PCWSTR pszGameName) {
 		m_pszGameName = pszGameName;
 		m_mainWindow = std::make_unique<MainWindow>();
@@ -37,11 +35,8 @@ namespace library
 	  Returns:  HRESULT
 				Status code
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Game::Initialize definition (remove the comment)
-	--------------------------------------------------------------------*/
+
 	HRESULT Game::Initialize(_In_ HINSTANCE hInstance, _In_ INT nCmdShow) {
-		//(_In_ HINSTANCE hInstance, _In_ INT nCmdShow, _In_ PCWSTR pszWindowName
 		if (FAILED(m_mainWindow->Initialize(hInstance, nCmdShow, GetGameName()))) {
 			DWORD dwError = GetLastError();
 
@@ -67,8 +62,6 @@ namespace library
 
 			return E_FAIL;
 		}
-
-		// 메인윈도우의 m_hWnd를 받아야 함. 윈도우 다음 device 초기화!
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -79,12 +72,8 @@ namespace library
 	  Returns:  INT
 				  Status code to return to the operating system
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: Game::Run definition (remove the comment)
-	--------------------------------------------------------------------*/
 
 	INT Game::Run() {
-		//이전 실습 루프와 유사해야한다.
 		MSG msg = { 0 };
 
 		while (WM_QUIT != msg.message) {

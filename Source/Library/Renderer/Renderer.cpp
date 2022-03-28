@@ -11,19 +11,17 @@ namespace library
                   m_immediateContext, m_immediateContext1, m_swapChain,
                   m_swapChain1, m_renderTargetView].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::Renderer definition (remove the comment)
-    --------------------------------------------------------------------*/
+
     Renderer::Renderer() {
-        D3D_DRIVER_TYPE m_driverType = D3D_DRIVER_TYPE_NULL;
-        D3D_FEATURE_LEVEL m_featureLevel = D3D_FEATURE_LEVEL_11_0;
-        ComPtr<ID3D11Device> m_d3dDevice(nullptr);
-        ComPtr<ID3D11Device1> m_d3dDevice1(nullptr);
-        ComPtr<ID3D11DeviceContext> m_immediateContext(nullptr);
-        ComPtr<ID3D11DeviceContext1> m_immediateContext1(nullptr);
-        ComPtr<IDXGISwapChain> m_swapChain(nullptr);
-        ComPtr<IDXGISwapChain1> m_swapChain1(nullptr);
-        ComPtr<ID3D11RenderTargetView> m_renderTargetView(nullptr);
+        m_driverType = D3D_DRIVER_TYPE_NULL;
+        m_featureLevel = D3D_FEATURE_LEVEL_11_0;
+        m_d3dDevice = nullptr;
+        m_d3dDevice1 = nullptr;
+        m_immediateContext = nullptr;
+        m_immediateContext1 = nullptr;
+        m_swapChain = nullptr;
+        m_swapChain1 = nullptr;
+        m_renderTargetView = nullptr;
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -41,11 +39,9 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::Initialize definition (remove the comment)
-    --------------------------------------------------------------------*/
+
     HRESULT Renderer::Initialize(_In_ HWND hWnd) {
-        HWND g_hWnd = hWnd; // 
+        HWND g_hWnd = hWnd;
         HRESULT hr = S_OK;
 
         RECT rc;
@@ -190,9 +186,7 @@ namespace library
 
       Summary:  Render the frame
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::Render definition (remove the comment)
-    --------------------------------------------------------------------*/
+
     void Renderer::Render() {
         m_immediateContext->ClearRenderTargetView(m_renderTargetView.Get(), DirectX::Colors::MidnightBlue);
         m_swapChain->Present(0, 0);

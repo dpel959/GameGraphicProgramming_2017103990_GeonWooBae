@@ -18,9 +18,7 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: MainWindow::Initialize definition (remove the comment)
-    --------------------------------------------------------------------*/
+
     HRESULT MainWindow::Initialize(_In_ HINSTANCE hInstance, _In_ INT nCmdShow, _In_ PCWSTR pszWindowName) {
         HRESULT hr = (initialize(hInstance, nCmdShow, pszWindowName, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX));
         return hr;
@@ -33,9 +31,7 @@ namespace library
       Returns:  PCWSTR
                   Name of the window class
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: MainWindow::GetWindowClassName definition (remove the comment)
-    --------------------------------------------------------------------*/
+
     PCWSTR MainWindow::GetWindowClassName() const {
         return L"Game Graphics Window Class"; 
     }
@@ -55,10 +51,7 @@ namespace library
       Returns:  LRESULT
                   Integer value that your program returns to Windows
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: MainWindow::HandleMessage definition (remove the comment)
-    --------------------------------------------------------------------*/
-    // 대충 이런식으로 해주면 되는듯.
+
     LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         switch (uMsg)
