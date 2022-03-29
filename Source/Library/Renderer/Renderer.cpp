@@ -12,16 +12,10 @@ namespace library
                   m_swapChain1, m_renderTargetView].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 
-    Renderer::Renderer() {
-        m_driverType = D3D_DRIVER_TYPE_NULL;
-        m_featureLevel = D3D_FEATURE_LEVEL_11_0;
-        m_d3dDevice = nullptr;
-        m_d3dDevice1 = nullptr;
-        m_immediateContext = nullptr;
-        m_immediateContext1 = nullptr;
-        m_swapChain = nullptr;
-        m_swapChain1 = nullptr;
-        m_renderTargetView = nullptr;
+    Renderer::Renderer() :
+        m_driverType(D3D_DRIVER_TYPE_NULL), m_featureLevel(D3D_FEATURE_LEVEL_11_0), m_d3dDevice(nullptr), m_d3dDevice1(nullptr),
+        m_immediateContext(nullptr), m_immediateContext1(nullptr), m_swapChain(nullptr), m_swapChain1(nullptr), m_renderTargetView(nullptr)
+    {
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -117,14 +111,10 @@ namespace library
                 hr = m_immediateContext.As(&m_immediateContext1);
             }
 
-            DXGI_SWAP_CHAIN_DESC1 sd = {};
-            sd.Width = width;
-            sd.Height = height;
-            sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-            sd.SampleDesc.Count = 1;
-            sd.SampleDesc.Quality = 0;
-            sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-            sd.BufferCount = 1;
+            DXGI_SWAP_CHAIN_DESC1 sd = { .Width = width, .Height = height, .Format = DXGI_FORMAT_R8G8B8A8_UNORM, 
+                .SampleDesc{.Count = 1, .Quality = 0},
+                .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT, .BufferCount = 1,
+            };
 
             hr = dxgiFactory2->CreateSwapChainForHwnd(m_d3dDevice.Get(), g_hWnd, &sd, nullptr, nullptr, m_swapChain1.GetAddressOf());
             if (SUCCEEDED(hr))
@@ -135,18 +125,9 @@ namespace library
         else
         {
             // DirectX 11.0 systems
-            DXGI_SWAP_CHAIN_DESC sd = {};
-            sd.BufferCount = 1;
-            sd.BufferDesc.Width = width;
-            sd.BufferDesc.Height = height;
-            sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-            sd.BufferDesc.RefreshRate.Numerator = 60;
-            sd.BufferDesc.RefreshRate.Denominator = 1;
-            sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-            sd.OutputWindow = g_hWnd;
-            sd.SampleDesc.Count = 1;
-            sd.SampleDesc.Quality = 0;
-            sd.Windowed = TRUE;
+            DXGI_SWAP_CHAIN_DESC sd = { .BufferDesc{.Width = width, .Height = height, .RefreshRate{.Numerator = 60, .Denominator = 1},
+                .Format = DXGI_FORMAT_R8G8B8A8_UNORM}, .SampleDesc{.Count = 1, .Quality = 0}, .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
+                .BufferCount = 1, .OutputWindow = g_hWnd, .Windowed = TRUE };
 
             hr = dxgiFactory->CreateSwapChain(m_d3dDevice.Get(), &sd, m_swapChain.GetAddressOf());
         }
@@ -168,13 +149,7 @@ namespace library
 
         m_immediateContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
 
-        D3D11_VIEWPORT vp;
-        vp.Width = (FLOAT)width;
-        vp.Height = (FLOAT)height;
-        vp.MinDepth = 0.0f;
-        vp.MaxDepth = 1.0f;
-        vp.TopLeftX = 0;
-        vp.TopLeftY = 0;
+        D3D11_VIEWPORT vp = {.TopLeftX = 0, .TopLeftY = 0, .Width = (FLOAT)width, .Height = (FLOAT)height, .MinDepth = 0.0f, .MaxDepth = 1.0f};
         m_immediateContext->RSSetViewports(1, &vp);
 
         return S_OK;

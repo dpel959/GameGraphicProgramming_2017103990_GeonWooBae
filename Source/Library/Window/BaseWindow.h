@@ -124,10 +124,9 @@ namespace library
         Modifies: [m_hInstance, m_hWnd, m_pszWindowName].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     template<class DerivedType>
-    BaseWindow<DerivedType>::BaseWindow() {
-        m_hInstance = nullptr;
-        m_hWnd = nullptr;
-        m_pszWindowName = nullptr;
+    BaseWindow<DerivedType>::BaseWindow() 
+        :m_hInstance(nullptr), m_hWnd(nullptr), m_pszWindowName(nullptr)
+    {
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -199,7 +198,7 @@ namespace library
         {
             .cbSize = sizeof(WNDCLASSEX),
             .style = CS_HREDRAW | CS_VREDRAW,
-            .lpfnWndProc = DerivedType::WindowProc, 
+            .lpfnWndProc = DerivedType::WindowProc,
             .cbClsExtra = 0,
             .cbWndExtra = 0,
             .hInstance = hInstance,
@@ -207,7 +206,7 @@ namespace library
             .hCursor = LoadCursor(nullptr, IDC_ARROW),
             .hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1),
             .lpszMenuName = nullptr,
-            .lpszClassName = L"Game Graphics Window Class",
+            .lpszClassName = GetWindowClassName(),
             .hIconSm = LoadIcon(wcex.hInstance, IDI_APPLICATION),
         };
 
@@ -224,10 +223,8 @@ namespace library
         }
 
         m_hInstance = hInstance;
-        //RECT rc = { 0,0,800,600 };
-        //AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
-        m_hWnd = CreateWindow(L"Game Graphics Window Class", m_pszWindowName,
+        m_hWnd = CreateWindow(GetWindowClassName(), m_pszWindowName,
             dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance,
             this);
 

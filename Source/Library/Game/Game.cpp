@@ -13,10 +13,9 @@ namespace library
 	  Modifies: [m_pszGameName, m_mainWindow, m_renderer].
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 
-	Game::Game(_In_ PCWSTR pszGameName) {
-		m_pszGameName = pszGameName;
-		m_mainWindow = std::make_unique<MainWindow>();
-		m_renderer = std::make_unique<Renderer>();
+	Game::Game(_In_ PCWSTR pszGameName) 
+		:m_pszGameName(pszGameName), m_mainWindow(std::make_unique<MainWindow>()), m_renderer(std::make_unique<Renderer>())
+	{
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -62,6 +61,8 @@ namespace library
 
 			return E_FAIL;
 		}
+
+		return S_OK;
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
