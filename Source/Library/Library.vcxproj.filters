@@ -31,6 +31,9 @@
     <Filter Include="헤더 파일\Window">
       <UniqueIdentifier>{c4abd1c4-3b05-485b-b835-d741d4c7bf6e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="리소스 파일\Shaders">
+      <UniqueIdentifier>{53ee0edd-c325-4de7-905c-4b19a5be136f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -62,5 +65,28 @@
     <ClCompile Include="Window\MainWindow.cpp">
       <Filter>소스 파일\Window</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="directx.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\Lab03.fxh">
+      <Filter>리소스 파일\Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\Lab03_PS.hlsl">
+      <Filter>리소스 파일\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Lab03_VS.hlsl">
+      <Filter>리소스 파일\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

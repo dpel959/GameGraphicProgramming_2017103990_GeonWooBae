@@ -124,7 +124,7 @@ namespace library
         Modifies: [m_hInstance, m_hWnd, m_pszWindowName].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     template<class DerivedType>
-    BaseWindow<DerivedType>::BaseWindow() 
+    BaseWindow<DerivedType>::BaseWindow()
         :m_hInstance(nullptr), m_hWnd(nullptr), m_pszWindowName(nullptr)
     {
     }
@@ -137,9 +137,8 @@ namespace library
         Returns:  HWND
                     The handle to the window
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-
     template<class DerivedType>
-    HWND BaseWindow<DerivedType>::GetWindow() const{
+    HWND BaseWindow<DerivedType>::GetWindow() const {
         return m_hWnd;
     }
 
@@ -177,7 +176,6 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-
     template<class DerivedType>
     HRESULT BaseWindow<DerivedType>::initialize(
         _In_ HINSTANCE hInstance,
@@ -190,7 +188,7 @@ namespace library
         _In_opt_ INT nHeight,
         _In_opt_ HWND hWndParent,
         _In_opt_ HMENU hMenu
-    ) 
+    )
     {
         m_pszWindowName = pszWindowName;
 

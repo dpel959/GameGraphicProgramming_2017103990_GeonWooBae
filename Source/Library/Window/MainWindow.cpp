@@ -23,6 +23,7 @@ namespace library
         HRESULT hr = (initialize(hInstance, nCmdShow, pszWindowName, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX));
         return hr;
     }
+
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   MainWindow::GetWindowClassName
 
@@ -33,7 +34,7 @@ namespace library
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 
     PCWSTR MainWindow::GetWindowClassName() const {
-        return L"Game Graphics Window Class"; 
+        return L"Game Graphics Window Class";
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -51,7 +52,6 @@ namespace library
       Returns:  LRESULT
                   Integer value that your program returns to Windows
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-
     LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         switch (uMsg)

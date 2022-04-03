@@ -12,8 +12,7 @@ namespace library
 
 	  Modifies: [m_pszGameName, m_mainWindow, m_renderer].
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-
-	Game::Game(_In_ PCWSTR pszGameName) 
+	Game::Game(_In_ PCWSTR pszGameName)
 		:m_pszGameName(pszGameName), m_mainWindow(std::make_unique<MainWindow>()), m_renderer(std::make_unique<Renderer>())
 	{
 	}
@@ -34,7 +33,6 @@ namespace library
 	  Returns:  HRESULT
 				Status code
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-
 	HRESULT Game::Initialize(_In_ HINSTANCE hInstance, _In_ INT nCmdShow) {
 		if (FAILED(m_mainWindow->Initialize(hInstance, nCmdShow, GetGameName()))) {
 			DWORD dwError = GetLastError();
@@ -98,8 +96,8 @@ namespace library
 	  Returns:  PCWSTR
 				  Name of the game
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-
-	PCWSTR Game::GetGameName() const{
+	PCWSTR Game::GetGameName() const {
 		return m_pszGameName;
 	}
+
 }
