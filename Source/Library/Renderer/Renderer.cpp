@@ -199,20 +199,22 @@ namespace library
 
         SimpleVertex vertices[] =
         {
-            XMFLOAT3(0.0f, 0.5f, 0.5f),
-            XMFLOAT3(0.5f, -0.5f, 0.5f),
-            XMFLOAT3(-0.5f, -0.5f, 0.5f),
+            { XMFLOAT3(0.0f, 0.5f, 0.5f) },
+            { XMFLOAT3(0.5f, -0.5f, 0.5f) },
+            { XMFLOAT3(-0.5f, -0.5f, 0.5f) },
         };
 
         D3D11_BUFFER_DESC bd = { .ByteWidth = sizeof(SimpleVertex) * 3, .Usage = D3D11_USAGE_DEFAULT,
-            .BindFlags = D3D11_BIND_VERTEX_BUFFER, .CPUAccessFlags = 0};
+            .BindFlags = D3D11_BIND_VERTEX_BUFFER, .CPUAccessFlags = 0, .MiscFlags = 0};
 
-        D3D11_SUBRESOURCE_DATA InitData = {.pSysMem = vertices};
+        D3D11_SUBRESOURCE_DATA InitData = {.pSysMem = vertices, .SysMemPitch = 0, .SysMemSlicePitch = 0};
         hr = m_d3dDevice->CreateBuffer(&bd, &InitData, m_vertexBuffer.GetAddressOf());
+
+        if (FAILED(hr)) return hr;
 
         UINT stride = sizeof(SimpleVertex);
         UINT offset = 0;
-        m_immediateContext->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
+        m_immediateContext->IASetVertexBuffers(0u, 1u, m_vertexBuffer.GetAddressOf(), &stride, &offset);
         m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
         return S_OK;
@@ -267,7 +269,7 @@ namespace library
 #endif
 
         ComPtr<ID3DBlob> pErrorBlob(nullptr);
-        hr = D3DCompileFromFile(pszFileName, nullptr, nullptr, pszEntryPoint, szShaderModel, dwShaderFlags, 0, ppBlobOut, pErrorBlob.GetAddressOf());
+        hr = D3DCompileFromFile(pszFileName, nullptr, nullptr, pszEntryPoint, szShaderModel, dwShaderFlags, 0u, ppBlobOut, pErrorBlob.GetAddressOf());
         if (FAILED(hr)) {
             if (pErrorBlob) {
                 OutputDebugStringA(reinterpret_cast<const char*>(pErrorBlob->GetBufferPointer()));
