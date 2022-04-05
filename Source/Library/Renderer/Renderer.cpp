@@ -12,10 +12,20 @@ namespace library
                   m_swapChain1, m_renderTargetView, m_vertexShader,
                   m_pixelShader, m_vertexLayout, m_vertexBuffer].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    Renderer::Renderer() :
-        m_driverType(D3D_DRIVER_TYPE_NULL), m_featureLevel(D3D_FEATURE_LEVEL_11_0), m_d3dDevice(nullptr), m_d3dDevice1(nullptr),
-        m_immediateContext(nullptr), m_immediateContext1(nullptr), m_swapChain(nullptr), m_swapChain1(nullptr), m_renderTargetView(nullptr),
-        m_vertexShader(nullptr), m_pixelShader(nullptr), m_vertexLayout(nullptr), m_vertexBuffer(nullptr)
+    Renderer::Renderer() 
+        : m_driverType(D3D_DRIVER_TYPE_NULL)
+        , m_featureLevel(D3D_FEATURE_LEVEL_11_0)
+        , m_d3dDevice(nullptr)
+        , m_d3dDevice1(nullptr)
+        , m_immediateContext(nullptr)
+        , m_immediateContext1(nullptr)
+        , m_swapChain(nullptr)
+        , m_swapChain1(nullptr)
+        , m_renderTargetView(nullptr)
+        , m_vertexShader(nullptr)
+        , m_pixelShader(nullptr)
+        , m_vertexLayout(nullptr)
+        , m_vertexBuffer(nullptr)
     {
     }
 
@@ -112,9 +122,18 @@ namespace library
                 hr = m_immediateContext.As(&m_immediateContext1);
             }
 
-            DXGI_SWAP_CHAIN_DESC1 sd = { .Width = width, .Height = height, .Format = DXGI_FORMAT_R8G8B8A8_UNORM,
-                .SampleDesc{.Count = 1, .Quality = 0},
-                .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT, .BufferCount = 1,
+            DXGI_SWAP_CHAIN_DESC1 sd = 
+            { 
+                .Width = width, 
+                .Height = height, 
+                .Format = DXGI_FORMAT_R8G8B8A8_UNORM,
+                .SampleDesc = 
+                {
+                    .Count = 1, 
+                    .Quality = 0
+                },
+                .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT, 
+                .BufferCount = 1,
             };
 
             hr = dxgiFactory2->CreateSwapChainForHwnd(m_d3dDevice.Get(), g_hWnd, &sd, nullptr, nullptr, m_swapChain1.GetAddressOf());
@@ -126,9 +145,29 @@ namespace library
         else
         {
             // DirectX 11.0 systems
-            DXGI_SWAP_CHAIN_DESC sd = { .BufferDesc{.Width = width, .Height = height, .RefreshRate{.Numerator = 60, .Denominator = 1},
-                .Format = DXGI_FORMAT_R8G8B8A8_UNORM}, .SampleDesc{.Count = 1, .Quality = 0}, .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
-                .BufferCount = 1, .OutputWindow = g_hWnd, .Windowed = TRUE };
+            DXGI_SWAP_CHAIN_DESC sd = 
+            { 
+                .BufferDesc = 
+                {
+                    .Width = width, 
+                    .Height = height, 
+                    .RefreshRate = 
+                    {
+                        .Numerator = 60, 
+                        .Denominator = 1
+                    },
+                    .Format = DXGI_FORMAT_R8G8B8A8_UNORM
+                }, 
+                .SampleDesc = 
+                {
+                    .Count = 1, 
+                    .Quality = 0
+                }, 
+                .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
+                .BufferCount = 1, 
+                .OutputWindow = g_hWnd, 
+                .Windowed = TRUE 
+            };
 
             hr = dxgiFactory->CreateSwapChain(m_d3dDevice.Get(), &sd, m_swapChain.GetAddressOf());
         }
@@ -150,50 +189,95 @@ namespace library
 
         m_immediateContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
 
-        D3D11_VIEWPORT vp = { .TopLeftX = 0, .TopLeftY = 0, .Width = (FLOAT)width, .Height = (FLOAT)height, .MinDepth = 0.0f, .MaxDepth = 1.0f };
+        D3D11_VIEWPORT vp = 
+        { 
+            .TopLeftX = 0, 
+            .TopLeftY = 0, 
+            .Width = (FLOAT)width, 
+            .Height = (FLOAT)height, 
+            .MinDepth = 0.0f, 
+            .MaxDepth = 1.0f 
+        };
+
         m_immediateContext->RSSetViewports(1, &vp);
 
         ComPtr<ID3DBlob> pVSBlob(nullptr);
-        hr = compileShaderFromFile(L"../Library/Shaders/Lab03.fxh", "VS", "vs_5_0", pVSBlob.GetAddressOf());
+        hr = compileShaderFromFile(
+            L"../Library/Shaders/Lab03.fxh", 
+            "VS", 
+            "vs_5_0", 
+            pVSBlob.GetAddressOf()
+        );
+
         if (FAILED(hr)) {
-            MessageBox(nullptr, L"FX file cannot be commpiled. Please run this executable from the directory that contains the FX file."
-                , L"Error", MB_OK);
+            MessageBox(
+                nullptr, 
+                L"FX file cannot be commpiled. Please run this executable from the directory that contains the FX file.", 
+                L"Error", 
+                MB_OK
+            );
             return hr;
         }
 
-        hr = m_d3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, m_vertexShader.GetAddressOf());
+        hr = m_d3dDevice->CreateVertexShader(
+            pVSBlob->GetBufferPointer(), 
+            pVSBlob->GetBufferSize(), 
+            nullptr, 
+            m_vertexShader.GetAddressOf()
+        );
 
         if (FAILED(hr)) return hr;
 
         D3D11_INPUT_ELEMENT_DESC layout[] =
         {
-            {"POSITION",
-            0,
-            DXGI_FORMAT_R32G32B32_FLOAT,
-            0,
-            0,
-            D3D11_INPUT_PER_VERTEX_DATA,
-            0},
+            {
+                "POSITION",
+                0,
+                DXGI_FORMAT_R32G32B32_FLOAT,
+                0,
+                0,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0
+            },
         };
         UINT numElements = ARRAYSIZE(layout);
 
-        hr = m_d3dDevice->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(),
-            pVSBlob->GetBufferSize(), m_vertexLayout.GetAddressOf());
+        hr = m_d3dDevice->CreateInputLayout(
+            layout, 
+            numElements, 
+            pVSBlob->GetBufferPointer(),
+            pVSBlob->GetBufferSize(), 
+            m_vertexLayout.GetAddressOf()
+        );
 
         if (FAILED(hr)) return hr;
 
         m_immediateContext->IASetInputLayout(m_vertexLayout.Get());
 
         ComPtr<ID3DBlob> pPSBlob(nullptr);
-        hr = compileShaderFromFile(L"../Library/Shaders/Lab03.fxh", "PS", "ps_5_0", pPSBlob.GetAddressOf());
+        hr = compileShaderFromFile(
+            L"../Library/Shaders/Lab03.fxh", 
+            "PS", 
+            "ps_5_0", 
+            pPSBlob.GetAddressOf()
+        );
+
         if (FAILED(hr))
         {
             MessageBox(nullptr,
-                L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
+                L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.",
+                L"Error", 
+                MB_OK
+            );
             return hr;
         }
 
-        hr = m_d3dDevice->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, m_pixelShader.GetAddressOf());
+        hr = m_d3dDevice->CreatePixelShader(
+            pPSBlob->GetBufferPointer(), 
+            pPSBlob->GetBufferSize(), 
+            nullptr, 
+            m_pixelShader.GetAddressOf()
+        );
 
         if (FAILED(hr)) return hr;
 
@@ -204,10 +288,22 @@ namespace library
             { XMFLOAT3(-0.5f, -0.5f, 0.5f) },
         };
 
-        D3D11_BUFFER_DESC bd = { .ByteWidth = sizeof(SimpleVertex) * 3, .Usage = D3D11_USAGE_DEFAULT,
-            .BindFlags = D3D11_BIND_VERTEX_BUFFER, .CPUAccessFlags = 0, .MiscFlags = 0};
+        D3D11_BUFFER_DESC bd = 
+        { 
+            .ByteWidth = sizeof(SimpleVertex) * 3, 
+            .Usage = D3D11_USAGE_DEFAULT,
+            .BindFlags = D3D11_BIND_VERTEX_BUFFER, 
+            .CPUAccessFlags = 0, 
+            .MiscFlags = 0
+        };
 
-        D3D11_SUBRESOURCE_DATA InitData = {.pSysMem = vertices, .SysMemPitch = 0, .SysMemSlicePitch = 0};
+        D3D11_SUBRESOURCE_DATA InitData = 
+        {
+            .pSysMem = vertices, 
+            .SysMemPitch = 0, 
+            .SysMemSlicePitch = 0
+        };
+
         hr = m_d3dDevice->CreateBuffer(&bd, &InitData, m_vertexBuffer.GetAddressOf());
 
         if (FAILED(hr)) return hr;
@@ -272,7 +368,7 @@ namespace library
         hr = D3DCompileFromFile(pszFileName, nullptr, nullptr, pszEntryPoint, szShaderModel, dwShaderFlags, 0u, ppBlobOut, pErrorBlob.GetAddressOf());
         if (FAILED(hr)) {
             if (pErrorBlob) {
-                OutputDebugStringA(reinterpret_cast<const char*>(pErrorBlob->GetBufferPointer()));
+                OutputDebugStringA(reinterpret_cast<LPCSTR>(pErrorBlob->GetBufferPointer()));
             }
             return hr;
         }
