@@ -101,12 +101,14 @@
     <ClCompile Include="Cube\BaseCube.cpp" />
     <ClCompile Include="Cube\YourCube.cpp" />
     <ClCompile Include="Cube\YourCube2.cpp" />
+    <ClCompile Include="Cube\YourCube3.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cube\BaseCube.h" />
     <ClInclude Include="Cube\YourCube.h" />
     <ClInclude Include="Cube\YourCube2.h" />
+    <ClInclude Include="Cube\YourCube3.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Shaders.fxh" />

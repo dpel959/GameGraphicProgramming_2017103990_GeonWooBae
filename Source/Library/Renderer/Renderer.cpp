@@ -370,22 +370,6 @@ namespace library
       Summary:  Render the frame
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     void Renderer::Render() {
-        static float t = 0.0f;
-        if (m_driverType == D3D_DRIVER_TYPE_REFERENCE)
-        {
-            t += (float)XM_PI * 0.0125f;
-        }
-        else
-        {
-            static ULONGLONG timeStart = 0;
-            ULONGLONG timeCur = GetTickCount64();
-            if (timeStart == 0)
-                timeStart = timeCur;
-            t = (timeCur - timeStart) / 1000.0f;
-        }
-
-        Update(t);
-
         m_immediateContext->ClearRenderTargetView(m_renderTargetView.Get(), DirectX::Colors::MidnightBlue);
         m_immediateContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 

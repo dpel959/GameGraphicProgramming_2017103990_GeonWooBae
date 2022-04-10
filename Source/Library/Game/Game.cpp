@@ -78,6 +78,9 @@ namespace library
     INT Game::Run() {
         MSG msg = { 0 };
         LARGE_INTEGER StartingTime, EndingTime, Frequency;
+        FLOAT deltaTime = 0;
+        QueryPerformanceFrequency(&Frequency);
+        QueryPerformanceCounter(&StartingTime);
 
         while (WM_QUIT != msg.message) {
             if (PeekMessage(&msg, nullptr, 0u, 0u, PM_REMOVE)) {
@@ -86,11 +89,9 @@ namespace library
             }
             else {
                 QueryPerformanceFrequency(&Frequency);
-                QueryPerformanceCounter(&StartingTime);
-
                 QueryPerformanceCounter(&EndingTime);
-                FLOAT deltaTime = (EndingTime.QuadPart - StartingTime.QuadPart) / (FLOAT)Frequency.QuadPart;
-                m_renderer->Update(deltaTime); // renderables 업데이트
+                deltaTime = (FLOAT)(EndingTime.QuadPart - StartingTime.QuadPart) / (FLOAT)Frequency.QuadPart;
+                m_renderer->Update(deltaTime); // renderables update
                 m_renderer->Render();
             }
         }
