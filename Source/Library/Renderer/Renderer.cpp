@@ -78,8 +78,6 @@ namespace library
         UINT width = rc.right - rc.left;
         UINT height = rc.bottom - rc.top;
 
-
-
         UINT createDeviceFlags = 0;
 #ifdef _DEBUG
         createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;

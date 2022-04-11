@@ -88,12 +88,6 @@ namespace library
                             .X = raw->data.mouse.lLastX,
                             .Y = raw->data.mouse.lLastY
                         };
-                        //std::string outmsg = "X: ";
-                        //outmsg += std::to_string(m_mouseRelativeMovement.X);
-                        //outmsg += ", Y: ";
-                        //outmsg += std::to_string(m_mouseRelativeMovement.Y);
-                        //outmsg += "\n";
-                        //OutputDebugStringA(outmsg.c_str());
                     }
                 }
             }

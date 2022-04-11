@@ -79,34 +79,38 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return E_FAIL;
     }
 
-    // YourCube 2
+#pragma region unused
 
-    std::shared_ptr<YourCube2> yc2 = std::make_shared<YourCube2>();
-    if (FAILED(game->GetRenderer()->AddRenderable(L"YourCube2", yc2))) {
-        return E_FAIL;
-    }
+    //// YourCube 2
 
-    if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"YourCube2", L"MainShader"))) {
-        return E_FAIL;
-    }
+    //std::shared_ptr<YourCube2> yc2 = std::make_shared<YourCube2>();
+    //if (FAILED(game->GetRenderer()->AddRenderable(L"YourCube2", yc2))) {
+    //    return E_FAIL;
+    //}
 
-    if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"YourCube2", L"MainShader"))) {
-        return E_FAIL;
-    }
+    //if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"YourCube2", L"MainShader"))) {
+    //    return E_FAIL;
+    //}
 
-    // YourCube 3
-    std::shared_ptr<YourCube3> yc3 = std::make_shared<YourCube3>();
-    if (FAILED(game->GetRenderer()->AddRenderable(L"YourCube3", yc3))) {
-        return E_FAIL;
-    }
+    //if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"YourCube2", L"MainShader"))) {
+    //    return E_FAIL;
+    //}
 
-    if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"YourCube3", L"MainShader"))) {
-        return E_FAIL;
-    }
+    //// YourCube 3
+    //std::shared_ptr<YourCube3> yc3 = std::make_shared<YourCube3>();
+    //if (FAILED(game->GetRenderer()->AddRenderable(L"YourCube3", yc3))) {
+    //    return E_FAIL;
+    //}
 
-    if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"YourCube3", L"MainShader"))) {
-        return E_FAIL;
-    }
+    //if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"YourCube3", L"MainShader"))) {
+    //    return E_FAIL;
+    //}
+
+    //if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"YourCube3", L"MainShader"))) {
+    //    return E_FAIL;
+    //}
+
+#pragma endregion
 
     if (FAILED(game->Initialize(hInstance, nCmdShow)))
     {

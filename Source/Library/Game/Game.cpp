@@ -98,7 +98,6 @@ namespace library
                     deltaTime
                     );
                 m_mainWindow->ResetMouseMovement(); // mouse input이 handle되면 reset
-                //renderer가 camera tr
 
                 m_renderer->Update(deltaTime); // renderables update
                 m_renderer->Render();

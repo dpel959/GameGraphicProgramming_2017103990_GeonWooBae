@@ -26,8 +26,12 @@ namespace library
         , m_cameraUp(DEFAULT_UP)
         , m_eye(position)
     {
-        m_at = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-        m_up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+        float origin[3];
+        origin[0] = XMVectorGetX(position);
+        origin[1] = XMVectorGetY(position);
+        origin[2] = XMVectorGetZ(position);
+        m_at = XMVectorSet(origin[0], origin[1], origin[2] + 5.0f, 0.0f);
+        m_up = XMVectorSet(origin[0], origin[1], origin[2] + 5.0f, 0.0f);
         m_rotation = XMMatrixRotationRollPitchYaw(m_pitch, m_yaw, 0);
         m_view = XMMatrixLookAtLH(m_eye, m_at, m_up);
     }
@@ -114,11 +118,6 @@ namespace library
         {
             m_pitch = -XM_PIDIV2;
         }
-        std::string outmsg = "Pitch: ";
-        outmsg += std::to_string(m_pitch);
-        outmsg += "\n";
-        OutputDebugStringA(outmsg.c_str());
-        // -pi/2~pi/2
 
         Update(deltaTime);
     }
@@ -136,7 +135,9 @@ namespace library
                  m_moveBackForward, m_moveUpDown, m_up, m_view].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     void Camera::Update(_In_ FLOAT deltaTime) {
-        m_rotation = XMMatrixRotationRollPitchYaw(m_pitch, m_yaw, 0);
+        if (abs(m_pitch) < XM_PIDIV2) {
+            m_rotation = XMMatrixRotationRollPitchYaw(m_pitch, m_yaw, 0);
+        }
         m_at = XMVector3TransformCoord(DEFAULT_FORWARD, m_rotation);
         m_at = XMVector3Normalize(m_at);
         
