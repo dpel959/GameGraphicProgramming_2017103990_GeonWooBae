@@ -91,6 +91,15 @@ namespace library
                 QueryPerformanceFrequency(&Frequency);
                 QueryPerformanceCounter(&EndingTime);
                 deltaTime = (FLOAT)(EndingTime.QuadPart - StartingTime.QuadPart) / (FLOAT)Frequency.QuadPart;
+                QueryPerformanceCounter(&StartingTime);
+                m_renderer->HandleInput(
+                    m_mainWindow->GetDirections(),
+                    m_mainWindow->GetMouseRelativeMovement(),
+                    deltaTime
+                    );
+                m_mainWindow->ResetMouseMovement(); // mouse input이 handle되면 reset
+                //renderer가 camera tr
+
                 m_renderer->Update(deltaTime); // renderables update
                 m_renderer->Render();
             }
