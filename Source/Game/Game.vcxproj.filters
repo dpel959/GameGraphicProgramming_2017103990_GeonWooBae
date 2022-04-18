@@ -30,13 +30,13 @@
     <ClCompile Include="Cube\BaseCube.cpp">
       <Filter>소스 파일\Cube</Filter>
     </ClCompile>
-    <ClCompile Include="Cube\YourCube.cpp">
+    <ClCompile Include="Cube\Cube.cpp">
       <Filter>소스 파일\Cube</Filter>
     </ClCompile>
-    <ClCompile Include="Cube\YourCube2.cpp">
+    <ClCompile Include="Cube\KyaruCube.cpp">
       <Filter>소스 파일\Cube</Filter>
     </ClCompile>
-    <ClCompile Include="Cube\YourCube3.cpp">
+    <ClCompile Include="Cube\KyaruBbak.cpp">
       <Filter>소스 파일\Cube</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,13 +44,13 @@
     <ClInclude Include="Cube\BaseCube.h">
       <Filter>헤더 파일\Cube</Filter>
     </ClInclude>
-    <ClInclude Include="Cube\YourCube.h">
+    <ClInclude Include="Cube\Cube.h">
       <Filter>헤더 파일\Cube</Filter>
     </ClInclude>
-    <ClInclude Include="Cube\YourCube2.h">
+    <ClInclude Include="Cube\KyaruCube.h">
       <Filter>헤더 파일\Cube</Filter>
     </ClInclude>
-    <ClInclude Include="Cube\YourCube3.h">
+    <ClInclude Include="Cube\KyaruBbak.h">
       <Filter>헤더 파일\Cube</Filter>
     </ClInclude>
   </ItemGroup>
@@ -66,5 +66,16 @@
     <None Include="Shaders\Shaders.fxh">
       <Filter>리소스 파일\Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="seafloor.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="kyarubbak.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="kyarucube.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
 </Project>

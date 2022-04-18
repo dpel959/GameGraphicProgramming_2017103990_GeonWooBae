@@ -43,6 +43,12 @@
     <Filter Include="소스 파일\Camera">
       <UniqueIdentifier>{90f64d78-eb27-499e-ad1c-8fec0b2330e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="헤더 파일\Texture">
+      <UniqueIdentifier>{7b90cf4f-4772-4347-95b6-3a94e419bfd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Texture">
+      <UniqueIdentifier>{432e03b5-bed5-4cba-ad2f-5c4e05ec6212}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -81,6 +87,9 @@
     <ClInclude Include="Camera\Camera.h">
       <Filter>헤더 파일\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="Texture\DDSTextureLoader.h">
+      <Filter>헤더 파일\Texture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\Game.cpp">
@@ -106,6 +115,9 @@
     </ClCompile>
     <ClCompile Include="Camera\Camera.cpp">
       <Filter>소스 파일\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture\DDSTextureLoader.cpp">
+      <Filter>소스 파일\Texture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -99,16 +99,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Cube\BaseCube.cpp" />
-    <ClCompile Include="Cube\YourCube.cpp" />
-    <ClCompile Include="Cube\YourCube2.cpp" />
-    <ClCompile Include="Cube\YourCube3.cpp" />
+    <ClCompile Include="Cube\Cube.cpp" />
+    <ClCompile Include="Cube\KyaruBbak.cpp" />
+    <ClCompile Include="Cube\KyaruCube.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cube\BaseCube.h" />
-    <ClInclude Include="Cube\YourCube.h" />
-    <ClInclude Include="Cube\YourCube2.h" />
-    <ClInclude Include="Cube\YourCube3.h" />
+    <ClInclude Include="Cube\Cube.h" />
+    <ClInclude Include="Cube\KyaruBbak.h" />
+    <ClInclude Include="Cube\KyaruCube.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Shaders.fxh" />
@@ -116,6 +116,11 @@
   <ItemGroup>
     <FxCompile Include="Shaders\PS.hlsl" />
     <FxCompile Include="Shaders\VS.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="kyarubbak.dds" />
+    <Image Include="kyarucube.dds" />
+    <Image Include="seafloor.dds" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

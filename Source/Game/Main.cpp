@@ -6,17 +6,19 @@
   Origin:    http://msdn.microsoft.com/en-us/library/windows/apps/ff729718.aspx
 
   Originally created by Microsoft Corporation under MIT License
-  � 2022 Kyung Hee University
+  © 2022 Kyung Hee University
 ===================================================================+*/
 
 #include "Common.h"
 
+#include <cstdio>
+#include <filesystem>
 #include <memory>
+#include <source_location>
 
-#include"Cube/YourCube.h"
-#include"Cube/YourCube2.h"
-#include"Cube/YourCube3.h"
-
+#include "Cube/Cube.h"
+#include "Cube/KyaruCube.h"
+#include "Cube/KyaruBbak.h"
 #include "Game/Game.h"
 
 /*F+F+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -42,15 +44,13 @@
 -----------------------------------------------------------------F-F*/
 INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ INT nCmdShow)
 {
-
 #ifdef _DEBUG
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    std::unique_ptr<library::Game> game = std::make_unique<library::Game>(L"Game Graphics Assignment 01: 3D Camera Movement");
+    std::unique_ptr<library::Game> game = std::make_unique<library::Game>(L"Game Graphics Programming Lab 05: Texture Mapping and Constant Buffers");
 
     std::shared_ptr<library::VertexShader> vertexShader = std::make_shared<library::VertexShader>(L"Shaders/Shaders.fxh", "VS", "vs_5_0");
     if (FAILED(game->GetRenderer()->AddVertexShader(L"MainShader", vertexShader)))
@@ -64,53 +64,53 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
 
-    // YourCube 1
-
-    std::shared_ptr<YourCube> yc = std::make_shared<YourCube>();
-    if (FAILED(game->GetRenderer()->AddRenderable(L"YourCube", yc))) {
-        return E_FAIL;
+    std::shared_ptr<Cube> cube = std::make_shared<Cube>("seafloor.dds");
+    if (FAILED(game->GetRenderer()->AddRenderable(L"Cube", cube)))
+    {
+        return 0;
     }
 
-    if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"YourCube", L"MainShader"))) {
-        return E_FAIL;
+    if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"Cube", L"MainShader")))
+    {
+        return 0;
     }
 
-    if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"YourCube", L"MainShader"))) {
-        return E_FAIL;
+    if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"Cube", L"MainShader")))
+    {
+        return 0;
     }
 
-#pragma region unused
+    std::shared_ptr<KyaruCube> cube_sec = std::make_shared<KyaruCube>("kyarucube.dds");
+    if (FAILED(game->GetRenderer()->AddRenderable(L"Cube_Sec", cube_sec)))
+    {
+        return 0;
+    }
 
-    //// YourCube 2
+    if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"Cube_Sec", L"MainShader")))
+    {
+        return 0;
+    }
 
-    //std::shared_ptr<YourCube2> yc2 = std::make_shared<YourCube2>();
-    //if (FAILED(game->GetRenderer()->AddRenderable(L"YourCube2", yc2))) {
-    //    return E_FAIL;
-    //}
+    if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"Cube_Sec", L"MainShader")))
+    {
+        return 0;
+    }
 
-    //if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"YourCube2", L"MainShader"))) {
-    //    return E_FAIL;
-    //}
+    std::shared_ptr<KyaruBbak> cube_trd = std::make_shared<KyaruBbak>("kyarubbak.dds");
+    if (FAILED(game->GetRenderer()->AddRenderable(L"Cube_Trd", cube_trd)))
+    {
+        return 0;
+    }
 
-    //if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"YourCube2", L"MainShader"))) {
-    //    return E_FAIL;
-    //}
+    if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"Cube_Trd", L"MainShader")))
+    {
+        return 0;
+    }
 
-    //// YourCube 3
-    //std::shared_ptr<YourCube3> yc3 = std::make_shared<YourCube3>();
-    //if (FAILED(game->GetRenderer()->AddRenderable(L"YourCube3", yc3))) {
-    //    return E_FAIL;
-    //}
-
-    //if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"YourCube3", L"MainShader"))) {
-    //    return E_FAIL;
-    //}
-
-    //if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"YourCube3", L"MainShader"))) {
-    //    return E_FAIL;
-    //}
-
-#pragma endregion
+    if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"Cube_Trd", L"MainShader")))
+    {
+        return 0;
+    }
 
     if (FAILED(game->Initialize(hInstance, nCmdShow)))
     {

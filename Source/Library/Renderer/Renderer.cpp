@@ -8,9 +8,11 @@ namespace library
       Summary:  Constructor
 
       Modifies: [m_driverType, m_featureLevel, m_d3dDevice, m_d3dDevice1,
-                  m_immediateContext, m_immediateContext1, m_swapChain,
-                  m_swapChain1, m_renderTargetView, m_vertexShader,
-                  m_pixelShader, m_vertexLayout, m_vertexBuffer].
+                 m_immediateContext, m_immediateContext1, m_swapChain,
+                 m_swapChain1, m_renderTargetView, m_depthStencil,
+                 m_depthStencilView, m_cbChangeOnResize, m_camera,
+                 m_projection, m_renderables, m_vertexShaders,
+                 m_pixelShaders].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     Renderer::Renderer()
         : m_driverType(D3D_DRIVER_TYPE_NULL)
@@ -37,9 +39,10 @@ namespace library
                   Handle to the window
 
       Modifies: [m_d3dDevice, m_featureLevel, m_immediateContext,
-                  m_d3dDevice1, m_immediateContext1, m_swapChain1,
-                  m_swapChain, m_renderTargetView, m_vertexShader,
-                  m_vertexLayout, m_pixelShader, m_vertexBuffer].
+                 m_d3dDevice1, m_immediateContext1, m_swapChain1,
+                 m_swapChain, m_renderTargetView, m_cbChangeOnResize,
+                 m_projection, m_camera, m_vertexShaders,
+                 m_pixelShaders, m_renderables].
 
       Returns:  HRESULT
                   Status code
@@ -272,10 +275,37 @@ namespace library
         for (auto i = m_renderables.begin(); i != m_renderables.end(); i++) {
             i->second->Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
         }
+        // create cbChangesEveryFrame
 
         m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+        m_camera.Initialize(m_d3dDevice.Get()); 
+        // create cbChangeOnCameraMovement
+
+        D3D11_BUFFER_DESC bd =
+        {
+            .ByteWidth = sizeof(CBChangeOnResize),
+            .Usage = D3D11_USAGE_DEFAULT,
+            .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+            .CPUAccessFlags = 0,
+        };
+
+        hr = m_d3dDevice->CreateBuffer(&bd, nullptr, m_cbChangeOnResize.GetAddressOf()); 
+        if (FAILED(hr)) return hr;
+        // create cbChangeOnResize
+
         m_projection = XMMatrixPerspectiveFovLH(XM_PIDIV2, (FLOAT)width / (FLOAT)height, 0.01f, 100.0f);
+
+        CBChangeOnResize cbChangeOnResize;
+        cbChangeOnResize.Projection = XMMatrixTranspose(m_projection);
+        m_immediateContext->UpdateSubresource(
+            m_cbChangeOnResize.Get(),
+            0,
+            nullptr,
+            &cbChangeOnResize,
+            0,
+            0
+            );
 
         return S_OK;
     }
@@ -302,7 +332,7 @@ namespace library
     )
     {
         for (auto i = m_renderables.begin(); i != m_renderables.end(); i++) {
-            if (wcscmp(i->first, pszRenderableName) == 0) {
+            if (wcscmp(i->first.c_str(), pszRenderableName) == 0) {
                 return E_FAIL;
             }
         }
@@ -332,7 +362,7 @@ namespace library
     )
     {
         for (auto i = m_vertexShaders.begin(); i != m_vertexShaders.end(); i++) {
-            if (wcscmp(i->first, pszVertexShaderName) == 0) {
+            if (wcscmp(i->first.c_str(), pszVertexShaderName) == 0) {
                 return E_FAIL;
             }
         }
@@ -362,7 +392,7 @@ namespace library
     )
     {
         for (auto i = m_pixelShaders.begin(); i != m_pixelShaders.end(); i++) {
-            if (wcscmp(i->first, pszPixelShaderName) == 0) {
+            if (wcscmp(i->first.c_str(), pszPixelShaderName) == 0) {
                 return E_FAIL;
             }
         }
@@ -419,18 +449,41 @@ namespace library
         m_immediateContext->ClearRenderTargetView(m_renderTargetView.Get(), DirectX::Colors::MidnightBlue);
         m_immediateContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-        m_immediateContext->VSSetShader(m_vertexShaders.find(L"MainShader")->second->GetVertexShader().Get(), nullptr, 0);
-        m_immediateContext->PSSetShader(m_pixelShaders.find(L"MainShader")->second->GetPixelShader().Get(), nullptr, 0);
+        CBChangeOnCameraMovement cb_view;
+        cb_view = {
+            .View = XMMatrixTranspose(m_camera.GetView())
+        };
 
-        ConstantBuffer cb;
+        m_immediateContext->UpdateSubresource(
+            m_camera.GetConstantBuffer().Get(),
+            0,
+            nullptr,
+            &cb_view,
+            0,
+            0
+        );
+
+        CBChangesEveryFrame cb_world;
         for (auto i = m_renderables.begin(); i != m_renderables.end(); i++) {
-            cb = {
+            cb_world = {
                 .World = XMMatrixTranspose(i->second->GetWorldMatrix()),
-                .View = XMMatrixTranspose(m_camera.GetView()),
-                .Projection = XMMatrixTranspose(m_projection)
             };
-            m_immediateContext->UpdateSubresource(i->second->GetConstantBuffer().Get(), 0, nullptr, &cb, 0, 0);
-            m_immediateContext->VSSetConstantBuffers(0, 1, i->second->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->UpdateSubresource(
+                i->second->GetConstantBuffer().Get(),
+                0,
+                nullptr,
+                &cb_world,
+                0,
+                0
+                );
+            m_immediateContext->VSSetShader(m_vertexShaders.find(L"MainShader")->second->GetVertexShader().Get(), nullptr, 0);
+            m_immediateContext->VSSetConstantBuffers(0, 1, m_camera.GetConstantBuffer().GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(1, 1, m_cbChangeOnResize.GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(2, 1, i->second->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetShader(m_pixelShaders.find(L"MainShader")->second->GetPixelShader().Get(), nullptr, 0);
+            m_immediateContext->PSSetConstantBuffers(2, 1, i->second->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetShaderResources(0, 1, i->second->GetTextureResourceView().GetAddressOf());
+            m_immediateContext->PSSetSamplers(0, 1, i->second->GetSamplerState().GetAddressOf());
             m_immediateContext->DrawIndexed(36, 0, 0);
         }
 
