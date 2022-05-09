@@ -100,8 +100,6 @@
   <ItemGroup>
     <ClCompile Include="Cube\BaseCube.cpp" />
     <ClCompile Include="Cube\Cube.cpp" />
-    <ClCompile Include="Cube\KyaruBbak.cpp" />
-    <ClCompile Include="Cube\KyaruCube.cpp" />
     <ClCompile Include="Cube\RotatingCube.cpp" />
     <ClCompile Include="Light\RotatingPointLight.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -109,8 +107,6 @@
   <ItemGroup>
     <ClInclude Include="Cube\BaseCube.h" />
     <ClInclude Include="Cube\Cube.h" />
-    <ClInclude Include="Cube\KyaruBbak.h" />
-    <ClInclude Include="Cube\KyaruCube.h" />
     <ClInclude Include="Cube\RotatingCube.h" />
     <ClInclude Include="Light\RotatingPointLight.h" />
   </ItemGroup>
@@ -118,8 +114,6 @@
     <None Include="Shaders\PhongShaders.fxh" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="kyarubbak.dds" />
-    <Image Include="kyarucube.dds" />
     <Image Include="seafloor.dds" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

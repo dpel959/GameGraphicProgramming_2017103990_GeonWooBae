@@ -589,11 +589,28 @@ namespace library
             m_immediateContext->PSSetConstantBuffers(2, 1, renderable->GetConstantBuffer().GetAddressOf());
 
             if (renderable->HasTexture()) {
-                m_immediateContext->PSSetShaderResources(0, 1, renderable->GetTextureResourceView().GetAddressOf());
-                m_immediateContext->PSSetSamplers(0, 1, renderable->GetSamplerState().GetAddressOf());
-            }
+                for (UINT j = 0u; j < renderable->GetNumMeshes(); j++) {
+                    m_immediateContext->PSSetShaderResources(
+                        0,
+                        1,
+                        renderable->GetMaterial(renderable->GetMesh(j).uMaterialIndex).pDiffuse->GetTextureResourceView().GetAddressOf()
+                    );
+                    m_immediateContext->PSSetSamplers(
+                        0,
+                        1,
+                        renderable->GetMaterial(renderable->GetMesh(j).uMaterialIndex).pDiffuse->GetSamplerState().GetAddressOf()
+                    );
 
-            m_immediateContext->DrawIndexed(renderable->GetNumIndices(), 0, 0);
+                    m_immediateContext->DrawIndexed(
+                        renderable->GetMesh(j).uNumIndices,
+                        renderable->GetMesh(j).uBaseIndex,
+                        renderable->GetMesh(j).uBaseVertex
+                    );
+                }
+            }
+            else {
+                m_immediateContext->DrawIndexed(renderable->GetNumIndices(), 0, 0);
+            }
         }
 
         m_swapChain->Present(0, 0);

@@ -39,12 +39,6 @@
     <ClCompile Include="Cube\Cube.cpp">
       <Filter>소스 파일\Cube</Filter>
     </ClCompile>
-    <ClCompile Include="Cube\KyaruCube.cpp">
-      <Filter>소스 파일\Cube</Filter>
-    </ClCompile>
-    <ClCompile Include="Cube\KyaruBbak.cpp">
-      <Filter>소스 파일\Cube</Filter>
-    </ClCompile>
     <ClCompile Include="Cube\RotatingCube.cpp">
       <Filter>소스 파일\Cube</Filter>
     </ClCompile>
@@ -57,12 +51,6 @@
       <Filter>헤더 파일\Cube</Filter>
     </ClInclude>
     <ClInclude Include="Cube\Cube.h">
-      <Filter>헤더 파일\Cube</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube\KyaruCube.h">
-      <Filter>헤더 파일\Cube</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube\KyaruBbak.h">
       <Filter>헤더 파일\Cube</Filter>
     </ClInclude>
     <ClInclude Include="Cube\RotatingCube.h">
@@ -79,12 +67,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="seafloor.dds">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="kyarubbak.dds">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="kyarucube.dds">
       <Filter>리소스 파일</Filter>
     </Image>
   </ItemGroup>
