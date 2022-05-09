@@ -19,7 +19,9 @@ namespace library
       Modifies: [m_vertexShader].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     VertexShader::VertexShader(_In_ PCWSTR pszFileName, _In_ PCSTR pszEntryPoint, _In_ PCSTR pszShaderModel) 
-        :Shader(pszFileName, pszEntryPoint, pszShaderModel)
+        : Shader(pszFileName, pszEntryPoint, pszShaderModel)
+        , m_vertexShader()
+        , m_vertexLayout()
     {
     }
 
@@ -56,6 +58,16 @@ namespace library
             m_vertexShader.GetAddressOf()
         );
 
+        if (FAILED(hr)) {
+            MessageBox(
+                nullptr,
+                L"FX file cannot be commpiled. Please run this executable from the directory that contains the FX file.",
+                L"Error",
+                MB_OK
+            );
+            return hr;
+        }
+
         D3D11_INPUT_ELEMENT_DESC layout[] =
         {
             {
@@ -72,10 +84,19 @@ namespace library
                 0,
                 DXGI_FORMAT_R32G32_FLOAT,
                 0,
-                12,
+                D3D11_APPEND_ALIGNED_ELEMENT,
                 D3D11_INPUT_PER_VERTEX_DATA,
                 0
-            }
+            },
+            {
+                "NORMAL",
+                0,
+                DXGI_FORMAT_R32G32B32_FLOAT,
+                0,
+                D3D11_APPEND_ALIGNED_ELEMENT,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0
+            },
         };
         UINT numElements = ARRAYSIZE(layout);
 

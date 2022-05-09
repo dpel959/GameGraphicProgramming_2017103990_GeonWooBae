@@ -154,7 +154,20 @@ namespace library
             .CPUAccessFlags = 0
         };
 
-        hr = device->CreateBuffer(&bd, nullptr, m_cbChangeOnCameraMovement.GetAddressOf());
+        XMFLOAT4 camPos;
+        XMStoreFloat4(&camPos, m_eye);
+        CBChangeOnCameraMovement cb =
+        {
+            .View = m_view,
+            .CameraPosition = camPos
+        };
+        
+        D3D11_SUBRESOURCE_DATA cData =
+        {
+            .pSysMem = &cb
+        };
+
+        hr = device->CreateBuffer(&bd, &cData, m_cbChangeOnCameraMovement.GetAddressOf());
         if (FAILED(hr)) return hr;
 
         return S_OK;

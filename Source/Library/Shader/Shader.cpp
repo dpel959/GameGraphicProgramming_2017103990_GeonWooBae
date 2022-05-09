@@ -60,7 +60,8 @@ namespace library
 #endif
 
         ComPtr<ID3DBlob> pErrorBlob(nullptr);
-        hr = D3DCompileFromFile(m_pszFileName, nullptr, nullptr, m_pszEntryPoint, m_pszShaderModel,
+        hr = D3DCompileFromFile(m_pszFileName, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE
+            , m_pszEntryPoint, m_pszShaderModel,
             dwShaderFlags, 0u, ppOutBlob, pErrorBlob.GetAddressOf());
         if (FAILED(hr)) {
             if (pErrorBlob) {

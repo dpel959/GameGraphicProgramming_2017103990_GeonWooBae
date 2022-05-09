@@ -19,7 +19,8 @@ namespace library
       Modifies: [m_pixelShader].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     PixelShader::PixelShader(_In_ PCWSTR pszFileName, _In_ PCSTR pszEntryPoint, _In_ PCSTR pszShaderModel)
-        :Shader(pszFileName, pszEntryPoint, pszShaderModel)
+        : Shader(pszFileName, pszEntryPoint, pszShaderModel)
+        , m_pixelShader()
     {
     }
 
