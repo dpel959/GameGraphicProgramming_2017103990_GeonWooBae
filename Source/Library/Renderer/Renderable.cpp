@@ -111,7 +111,6 @@ namespace library
             .pSysMem = &cb,
         };
 
-
         hr = pDevice->CreateBuffer(&bd, &cData, GetConstantBuffer().GetAddressOf());
 
         if (FAILED(hr)) return hr;

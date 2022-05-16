@@ -68,6 +68,17 @@ namespace library
             return hr;
         }
 
+        D3D11_INPUT_ELEMENT_DESC
+        {
+            .SemanticName = "INSTANCE_TRANSFORM",
+            .SemanticIndex = 0,
+            .Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
+            .InputSlot = 1,
+            .AlignedByteOffset = 0,
+            .InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA,
+            .InstanceDataStepRate = 1,
+        };
+
         D3D11_INPUT_ELEMENT_DESC layout[] =
         {
             {
@@ -97,7 +108,17 @@ namespace library
                 D3D11_INPUT_PER_VERTEX_DATA,
                 0
             },
+            {
+                "INSTANCE_TRANSFORM",
+                0,
+                DXGI_FORMAT_R32G32B32A32_FLOAT,
+                1,
+                0,
+                D3D11_INPUT_PER_INSTANCE_DATA,
+                1
+            },
         };
+
         UINT numElements = ARRAYSIZE(layout);
 
         hr = pDevice->CreateInputLayout(
