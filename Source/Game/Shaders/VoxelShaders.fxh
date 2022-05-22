@@ -71,7 +71,7 @@ struct VS_INPUT
 	float4 Position : POSITION;
 	float2 TexCoord : TEXCOORD0;
 	float3 Normal : NORMAL;
-	row_major matrix Transform : INSTANCE_TRANSFORM
+	row_major matrix Transform : INSTANCE_TRANSFORM;
 };
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
@@ -88,7 +88,6 @@ struct PS_INPUT
 	float4 WorldPos : POSITION;
 };
 
-
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
@@ -96,14 +95,15 @@ PS_INPUT VSVoxel(VS_INPUT input)
 {
 	PS_INPUT output = (PS_INPUT)0;
 	output.Pos = input.Position;
-	output.Pos = mul(output.Pos, Transform);
+	output.Pos = mul(output.Pos, input.Transform);
 	output.Pos = mul(output.Pos, World);
 	output.Pos = mul(output.Pos, View);
 	output.Pos = mul(output.Pos, Projection);
 	output.Tex = input.TexCoord;
-	output.Norm = normalize(mul(float4(input.Normal, 1), World).xyz);
+	output.Norm = mul(input.Normal, (float3x3)input.Transform);
+	output.Norm = normalize(mul(float4(output.Norm, 1), World).xyz);
 	output.WorldPos = input.Position;
-	output.WorldPos = mul(output.WorldPos, Transform);
+	output.WorldPos = mul(output.WorldPos, input.Transform);
 	output.WorldPos = mul(output.WorldPos, World);
 
 	return output;
@@ -136,7 +136,7 @@ float4 PSVoxel(PS_INPUT input) : SV_Target
 
 	ambient = ambient * OutputColor.xyz;
 	diffuse = diffuse * OutputColor.xyz;
-	specular = specular * OutputColor.xyz
+	specular = specular * OutputColor.xyz;
 
-	return float4(saturate(ambient + diffuse + specular), 1) * txDiffuse.Sample(samLinear, input.Tex);
+	return float4(saturate(ambient + diffuse + specular), 1);
 }

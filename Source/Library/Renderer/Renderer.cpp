@@ -478,7 +478,18 @@ namespace library
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     HRESULT Renderer::AddScene(_In_ PCWSTR pszSceneName, const std::filesystem::path& sceneFilePath) {
-        if (m_scenes[pszSceneName]) return E_FAIL;
+        bool isSceneFound = false;
+        for (auto& scene : m_scenes) {
+            if (wcscmp(scene.first.c_str(), pszSceneName) == 0) {
+                isSceneFound = true;
+                break;
+            }
+        }
+
+        if (isSceneFound) {
+            return E_FAIL;
+        }
+
         std::shared_ptr<Scene> tmpScene = std::make_shared<Scene>(sceneFilePath);
         m_scenes.insert(std::make_pair(pszSceneName, tmpScene));
         
@@ -714,31 +725,32 @@ namespace library
             m_immediateContext->VSSetConstantBuffers(2, 1, voxel->GetConstantBuffer().GetAddressOf());
             m_immediateContext->PSSetConstantBuffers(2, 1, voxel->GetConstantBuffer().GetAddressOf());
 
-            if (voxel->HasTexture()) {
-                for (UINT j = 0u; j < voxel->GetNumMeshes(); j++) {
-                    m_immediateContext->PSSetShaderResources(
-                        0,
-                        1,
-                        voxel->GetMaterial(voxel->GetMesh(j).uMaterialIndex).pDiffuse->GetTextureResourceView().GetAddressOf()
-                    );
-                    m_immediateContext->PSSetSamplers(
-                        0,
-                        1,
-                        voxel->GetMaterial(voxel->GetMesh(j).uMaterialIndex).pDiffuse->GetSamplerState().GetAddressOf()
-                    );
+            // 추후, texture가 들어가면 고려
+            //if (voxel->HasTexture()) {
+            //    for (UINT j = 0u; j < voxel->GetNumMeshes(); j++) {
+            //        m_immediateContext->PSSetShaderResources(
+            //            0,
+            //            1,
+            //            voxel->GetMaterial(voxel->GetMesh(j).uMaterialIndex).pDiffuse->GetTextureResourceView().GetAddressOf()
+            //        );
+            //        m_immediateContext->PSSetSamplers(
+            //            0,
+            //            1,
+            //            voxel->GetMaterial(voxel->GetMesh(j).uMaterialIndex).pDiffuse->GetSamplerState().GetAddressOf()
+            //        );
 
-                    m_immediateContext->DrawIndexedInstanced(
-                        voxel->GetMesh(j).uNumIndices,
-                        1,
-                        voxel->GetMesh(j).uBaseIndex,
-                        voxel->GetMesh(j).uBaseVertex,
-                        0
-                    );
-                }
-            }
-            else {
-                m_immediateContext->DrawIndexedInstanced(voxel->GetNumIndices(), 1, 0, 0, 0);
-            }
+            //        m_immediateContext->DrawIndexedInstanced(
+            //            voxel->GetMesh(j).uNumIndices,
+            //            1,
+            //            voxel->GetMesh(j).uBaseIndex,
+            //            voxel->GetMesh(j).uBaseVertex,
+            //            0
+            //        );
+            //    }
+            //}
+            //else {
+                m_immediateContext->DrawIndexedInstanced(voxel->GetNumIndices(), voxel->GetNumInstances(), 0, 0, 0);
+            //}
         }
 
         m_swapChain->Present(0, 0);
@@ -808,9 +820,23 @@ namespace library
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     HRESULT Renderer::SetVertexShaderOfScene(_In_ PCWSTR pszSceneName, _In_ PCWSTR pszVertexShaderName) {
-        if (!m_scenes[pszSceneName] || !m_vertexShaders[pszVertexShaderName]) {
+        if (!m_vertexShaders[pszVertexShaderName])
+        {
             return E_FAIL;
         }
+
+        bool isSceneFound = false;
+        for(auto& scene : m_scenes) {
+            if (wcscmp(scene.first.c_str(), pszSceneName) == 0) {
+                isSceneFound = true;
+                break;
+            }
+        }
+
+        if (!isSceneFound) {
+            return E_FAIL;
+        }
+
         for (auto& voxel : m_scenes[pszSceneName]->GetVoxels()) {
             voxel->SetVertexShader(m_vertexShaders[pszVertexShaderName]);
         }
@@ -833,9 +859,22 @@ namespace library
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     HRESULT Renderer::SetPixelShaderOfScene(_In_ PCWSTR pszSceneName, _In_ PCWSTR pszPixelShaderName) {
-        if (!m_scenes[pszSceneName] || !m_pixelShaders[pszPixelShaderName]) {
+        if (!m_pixelShaders[pszPixelShaderName]) {
             return E_FAIL;
         }
+
+        bool isSceneFound = false;
+        for (auto& scene : m_scenes) {
+            if (wcscmp(scene.first.c_str(), pszSceneName) == 0) {
+                isSceneFound = true;
+                break;
+            }
+        }
+
+        if (!isSceneFound) {
+            return E_FAIL;
+        }
+
         for (auto& voxel : m_scenes[pszSceneName]->GetVoxels()) {
             voxel->SetPixelShader(m_pixelShaders[pszPixelShaderName]);
         }

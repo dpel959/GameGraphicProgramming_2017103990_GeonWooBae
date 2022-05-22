@@ -101,8 +101,8 @@ namespace library
         {
             .pSysMem = m_aInstanceData.data()
         };
-        ID3D11Buffer* pInstanceBuffer = nullptr;
-        HRESULT hr = pDevice->CreateBuffer(&bd, &initData, &pInstanceBuffer);
+
+        HRESULT hr = pDevice->CreateBuffer(&bd, &initData, m_instanceBuffer.GetAddressOf());
 
         return hr;
     }
