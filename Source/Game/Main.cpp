@@ -20,6 +20,7 @@
 #include "Cube/RotatingCube.h"
 #include "Light/RotatingPointLight.h"
 #include "Scene/Voxel.h"
+#include "Model/Model.h"
 
 /*F+F+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   Function: wWinMain
@@ -138,6 +139,22 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
     if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"RotatingLightCube", L"LightShader")))
+    {
+        return 0;
+    }
+
+    std::shared_ptr<library::Model> phongModel = std::make_shared<library::Model>(L"nanosuit/nanosuit.obj");
+    if (FAILED(game->GetRenderer()->AddRenderable(L"PhongModel", phongModel)))
+    {
+        return 0;
+    }
+
+    if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"PhongModel", L"PhongShader")))
+    {
+        return 0;
+    }
+
+    if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"PhongModel", L"PhongShader")))
     {
         return 0;
     }
