@@ -301,7 +301,6 @@ namespace library
         _In_ const aiScene* pScene
         ) 
     {
-
         for (UINT i = 0u; i < m_aMeshes.size(); ++i) {
             m_aMeshes[i].uMaterialIndex = pScene->mMeshes[i]->mMaterialIndex;
             m_aMeshes[i].uNumIndices = pScene->mMeshes[i]->mNumFaces * 3u;
@@ -531,7 +530,6 @@ namespace library
     ) {
         HRESULT hr;
         m_aMeshes.resize(pScene->mNumMeshes);
-        m_aMaterials.resize(pScene->mNumMaterials);
 
         UINT numVertices = 0u;
         UINT numIndices = 0u;
@@ -541,11 +539,15 @@ namespace library
         hr = initMaterials(pDevice, pImmediateContext, pScene, filePath);
         if (FAILED(hr)) return hr;
 
-        AnimationData anim;
-        for (UINT i = 0u; i < m_aBoneData.size(); i++) {
-            anim.aBoneIndices = static_cast<XMUINT4>(m_aBoneData[i].aBoneIds);
-            anim.aBoneWeights = static_cast<XMFLOAT4>(m_aBoneData[i].aWeights);
-            m_aAnimationData.push_back(anim);
+        for (size_t i = 0; i < m_aVertices.size(); ++i)
+        {
+            m_aAnimationData.push_back(
+                AnimationData
+                {
+                    .aBoneIndices = XMUINT4(m_aBoneData.at(i).aBoneIds),
+                    .aBoneWeights = XMFLOAT4(m_aBoneData.at(i).aWeights)
+                }
+            );
         }
 
         hr = initialize(pDevice, pImmediateContext);
@@ -587,6 +589,11 @@ namespace library
         for (UINT i = 0u; i < pScene->mNumMaterials; ++i)
         {
             const aiMaterial* pMaterial = pScene->mMaterials[i];
+
+            std::string szName = filePath.string() + std::to_string(i);
+            std::wstring pwszName(szName.length(), L' ');
+            std::copy(szName.begin(), szName.end(), pwszName.begin());
+            m_aMaterials.push_back(std::make_shared<Material>(pwszName));
 
             loadTextures(pDevice, pImmediateContext, parentDirectory, pMaterial, i);
         }
@@ -658,12 +665,23 @@ namespace library
             const aiVector3D& texCoord =
                 pMesh->HasTextureCoords(0u) ?
                 pMesh->mTextureCoords[0][i] : zero3d;
+            const aiVector3D& tangent = pMesh->HasTangentsAndBitangents() ?
+                pMesh->mTangents[i] : zero3d;
+            const aiVector3D& biTangent = pMesh->HasTangentsAndBitangents() ?
+                pMesh->mBitangents[i] : zero3d;
 
             m_aVertices.push_back(
                 SimpleVertex{
                     .Position = XMFLOAT3(position.x, position.y, position.z),
                     .TexCoord = XMFLOAT2(texCoord.x, texCoord.y),
-                    .Normal = XMFLOAT3(normal.x, normal.y, normal.z)
+                    .Normal = XMFLOAT3(normal.x, normal.y, normal.z),
+                }
+            );
+
+            m_aNormalData.push_back(
+                NormalData{
+                    .Tangent = XMFLOAT3(tangent.x, tangent.y, tangent.z),
+                    .Bitangent = XMFLOAT3(biTangent.x, biTangent.y, biTangent.z)
                 }
             );
         }
@@ -812,7 +830,7 @@ namespace library
     )
     {
         HRESULT hr = S_OK;
-        m_aMaterials[uIndex].pDiffuse = nullptr;
+        m_aMaterials[uIndex]->pDiffuse = nullptr;
 
         if (pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0)
         {
@@ -829,9 +847,9 @@ namespace library
 
                 std::filesystem::path fullPath = parentDirectory / szPath;
 
-                m_aMaterials[uIndex].pDiffuse = std::make_shared<Texture>(fullPath);
+                m_aMaterials[uIndex]->pDiffuse = std::make_shared<Texture>(fullPath);
 
-                hr = m_aMaterials[uIndex].pDiffuse->Initialize(pDevice, pImmediateContext);
+                hr = m_aMaterials[uIndex]->pDiffuse->Initialize(pDevice, pImmediateContext);
                 if (FAILED(hr))
                 {
                     OutputDebugString(L"Error loading diffuse texture \"");
@@ -876,7 +894,7 @@ namespace library
     )
     {
         HRESULT hr = S_OK;
-        m_aMaterials[uIndex].pSpecular = nullptr;
+        m_aMaterials[uIndex]->pSpecularExponent = nullptr;
 
         if (pMaterial->GetTextureCount(aiTextureType_SHININESS) > 0)
         {
@@ -893,9 +911,9 @@ namespace library
 
                 std::filesystem::path fullPath = parentDirectory / szPath;
 
-                m_aMaterials[uIndex].pSpecular = std::make_shared<Texture>(fullPath);
+                m_aMaterials[uIndex]->pSpecularExponent = std::make_shared<Texture>(fullPath);
 
-                hr = m_aMaterials[uIndex].pSpecular->Initialize(pDevice, pImmediateContext);
+                hr = m_aMaterials[uIndex]->pSpecularExponent->Initialize(pDevice, pImmediateContext);
                 if (FAILED(hr))
                 {
                     OutputDebugString(L"Error loading specular texture \"");
@@ -906,6 +924,63 @@ namespace library
                 }
 
                 OutputDebugString(L"Loaded specular texture \"");
+                OutputDebugString(fullPath.c_str());
+                OutputDebugString(L"\"\n");
+            }
+        }
+
+        return hr;
+    }
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Model::loadNormalTexture
+
+      Summary:  Load a normal texture from given path
+
+      Args:     ID3D11Device* pDevice
+                  The Direct3D device to create the buffers
+                ID3D11DeviceContext* pImmediateContext
+                  The Direct3D context to set buffers
+                const std::filesystem::path& parentDirectory
+                  Parent path to the model
+                const aiMaterial* pMaterial
+                  Pointer to an assimp material object
+                UINT uIndex
+                  Index to a material
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    HRESULT Model::loadNormalTexture(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext, _In_ const std::filesystem::path& parentDirectory, _In_ const aiMaterial* pMaterial, _In_ UINT uIndex)
+    {
+        HRESULT hr = S_OK;
+        m_aMaterials[uIndex]->pNormal = nullptr;
+
+        if (pMaterial->GetTextureCount(aiTextureType_HEIGHT) > 0)
+        {
+            aiString aiPath;
+
+            if (pMaterial->GetTexture(aiTextureType_HEIGHT, 0u, &aiPath, nullptr, nullptr, nullptr, nullptr, nullptr) == AI_SUCCESS)
+            {
+                std::string szPath(aiPath.data);
+
+                if (szPath.substr(0ull, 2ull) == ".\\")
+                {
+                    szPath = szPath.substr(2ull, szPath.size() - 2ull);
+                }
+
+                std::filesystem::path fullPath = parentDirectory / szPath;
+
+                m_aMaterials[uIndex]->pNormal = std::make_shared<Texture>(fullPath);
+                m_bHasNormalMap = true;
+
+                if (FAILED(hr))
+                {
+                    OutputDebugString(L"Error loading normal texture \"");
+                    OutputDebugString(fullPath.c_str());
+                    OutputDebugString(L"\"\n");
+
+                    return hr;
+                }
+
+                OutputDebugString(L"Loaded normal texture \"");
                 OutputDebugString(fullPath.c_str());
                 OutputDebugString(L"\"\n");
             }
@@ -930,13 +1005,7 @@ namespace library
                 UINT uIndex
                   Index to a material
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    HRESULT Model::loadTextures(
-        _In_ ID3D11Device* pDevice,
-        _In_ ID3D11DeviceContext* pImmediateContext,
-        _In_ const std::filesystem::path& parentDirectory,
-        _In_ const aiMaterial* pMaterial,
-        _In_ UINT uIndex
-    )
+    HRESULT Model::loadTextures(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext, _In_ const std::filesystem::path& parentDirectory, _In_ const aiMaterial* pMaterial, _In_ UINT uIndex)
     {
         HRESULT hr = loadDiffuseTexture(pDevice, pImmediateContext, parentDirectory, pMaterial, uIndex);
         if (FAILED(hr))
@@ -945,6 +1014,12 @@ namespace library
         }
 
         hr = loadSpecularTexture(pDevice, pImmediateContext, parentDirectory, pMaterial, uIndex);
+        if (FAILED(hr))
+        {
+            return hr;
+        }
+
+        hr = loadNormalTexture(pDevice, pImmediateContext, parentDirectory, pMaterial, uIndex);
         if (FAILED(hr))
         {
             return hr;

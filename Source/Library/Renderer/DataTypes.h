@@ -41,6 +41,7 @@ namespace library
     {
         XMMATRIX World;
         XMFLOAT4 OutputColor;
+        BOOL HasNormalMap;
     };
 
     struct CBSkinning
@@ -54,4 +55,9 @@ namespace library
         XMFLOAT4 LightColors[NUM_LIGHTS];
     };
 
+    struct NormalData
+    {
+        XMFLOAT3 Tangent;
+        XMFLOAT3 Bitangent;
+    };
 }
