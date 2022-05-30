@@ -32,6 +32,7 @@ namespace library
         , m_projection()
         , m_pszMainSceneName()
         , m_renderables()
+        , m_models()
         , m_aPointLights()
         , m_vertexShaders()
         , m_pixelShaders()
@@ -336,6 +337,11 @@ namespace library
             if (FAILED(hr)) return hr;
         }
 
+        for (auto i = m_models.begin(); i != m_models.end(); i++) {
+            hr = i->second->Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
+            if (FAILED(hr)) return hr;
+        }
+
         // create cbChangesEveryFrame
         hr = m_camera.Initialize(m_d3dDevice.Get());
         if (FAILED(hr)) return hr;
@@ -367,7 +373,7 @@ namespace library
     )
     {
         for (auto i = m_renderables.begin(); i != m_renderables.end(); i++) {
-            if (wcscmp(i->first.c_str(), pszRenderableName) == 0) {
+            if (wcscmp(i->first, pszRenderableName) == 0) {
                 return E_FAIL;
             }
         }
@@ -423,7 +429,7 @@ namespace library
     )
     {
         for (auto i = m_vertexShaders.begin(); i != m_vertexShaders.end(); i++) {
-            if (wcscmp(i->first.c_str(), pszVertexShaderName) == 0) {
+            if (wcscmp(i->first, pszVertexShaderName) == 0) {
                 return E_FAIL;
             }
         }
@@ -453,7 +459,7 @@ namespace library
     )
     {
         for (auto i = m_pixelShaders.begin(); i != m_pixelShaders.end(); i++) {
-            if (wcscmp(i->first.c_str(), pszPixelShaderName) == 0) {
+            if (wcscmp(i->first, pszPixelShaderName) == 0) {
                 return E_FAIL;
             }
         }
@@ -490,9 +496,41 @@ namespace library
             return E_FAIL;
         }
 
-        std::shared_ptr<Scene> tmpScene = std::make_shared<Scene>(sceneFilePath);
-        m_scenes.insert(std::make_pair(pszSceneName, tmpScene));
+        m_scenes.insert(std::make_pair(pszSceneName, std::make_shared<Scene>(sceneFilePath)));
         
+        return S_OK;
+    }
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+    Method:   Renderer::AddModel
+
+    Summary:  Add a model object
+
+    Args:     PCWSTR pszModelName
+                Key of the model object
+              const std::shared_ptr<Model>& pModel
+                Shared pointer to the model object
+
+    Modifies: [m_models].
+
+    Returns:  HRESULT
+                Status code.
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    HRESULT Renderer::AddModel(_In_ PCWSTR pszModelName, _In_ const std::shared_ptr<Model>& pModel) {
+        bool isModelFound = false;
+        for (auto& model : m_models) {
+            if (wcscmp(model.first, pszModelName) == 0) {
+                isModelFound = true;
+                break;
+            }
+        }
+
+        if (isModelFound) {
+            return E_FAIL;
+        }
+
+        m_models.insert(std::make_pair(pszModelName, pModel));
+
         return S_OK;
     }
 
@@ -510,7 +548,7 @@ namespace library
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     HRESULT Renderer::SetMainScene(_In_ PCWSTR pszSceneName) {
-        if (!m_scenes[pszSceneName]) {
+        if (!m_scenes.contains(pszSceneName)) {
             return E_FAIL;
         }
         m_pszMainSceneName = pszSceneName;
@@ -542,6 +580,8 @@ namespace library
         );
     }
 
+
+
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Renderer::Update
 
@@ -557,6 +597,10 @@ namespace library
 
         for (auto& voxel : m_scenes[m_pszMainSceneName]->GetVoxels()) {
             voxel->Update(deltaTime);
+        }
+
+        for (auto& model : m_models) {
+            model.second->Update(deltaTime);
         }
 
         for (auto& light : m_aPointLights)
@@ -753,6 +797,99 @@ namespace library
             //}
         }
 
+        for (auto& model : m_models) {
+            UINT strides[2] = { static_cast<UINT>(sizeof(SimpleVertex)), static_cast<UINT>(sizeof(AnimationData))};
+            UINT offsets[2] = { 0u,0u };
+
+            auto& renderable = model.second;
+
+            ID3D11Buffer* aBuffers[2]
+            {
+                renderable->GetVertexBuffer().Get(),
+                renderable->GetAnimationBuffer().Get()
+            };
+
+            m_immediateContext->IASetVertexBuffers(
+                0,
+                2,
+                aBuffers,
+                strides,
+                offsets
+            );
+
+            m_immediateContext->IASetIndexBuffer(
+                renderable->GetIndexBuffer().Get(),
+                DXGI_FORMAT_R16_UINT,
+                0
+            );
+
+            m_immediateContext->IASetInputLayout(
+                renderable->GetVertexLayout().Get()
+            );
+
+            CBChangesEveryFrame cbRenderable = {
+                .World = XMMatrixTranspose(renderable->GetWorldMatrix()),
+                .OutputColor = renderable->GetOutputColor()
+            };
+
+            m_immediateContext->UpdateSubresource(
+                renderable->GetConstantBuffer().Get(),
+                0,
+                nullptr,
+                &cbRenderable,
+                0,
+                0
+            );
+
+            CBSkinning cbSkin;
+
+            for (UINT i = 0u; i < renderable->GetBoneTransforms().size(); i++) {
+                cbSkin.BoneTransforms[i] = renderable->GetBoneTransforms()[i];
+            }
+
+            m_immediateContext->UpdateSubresource(
+                renderable->GetSkinningConstantBuffer().Get(),
+                0,
+                nullptr,
+                &cbSkin,
+                0,
+                0
+            );
+
+            m_immediateContext->VSSetShader(renderable->GetVertexShader().Get(), nullptr, 0);
+            m_immediateContext->PSSetShader(renderable->GetPixelShader().Get(), nullptr, 0);
+
+            m_immediateContext->VSSetConstantBuffers(2, 1, renderable->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(2, 1, renderable->GetConstantBuffer().GetAddressOf());
+
+            m_immediateContext->VSSetConstantBuffers(4, 1, renderable->GetSkinningConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(4, 1, renderable->GetSkinningConstantBuffer().GetAddressOf());
+
+            if (renderable->HasTexture()) {
+                for (UINT j = 0u; j < renderable->GetNumMeshes(); j++) {
+                    m_immediateContext->PSSetShaderResources(
+                        0,
+                        1,
+                        renderable->GetMaterial(renderable->GetMesh(j).uMaterialIndex).pDiffuse->GetTextureResourceView().GetAddressOf()
+                    );
+                    m_immediateContext->PSSetSamplers(
+                        0,
+                        1,
+                        renderable->GetMaterial(renderable->GetMesh(j).uMaterialIndex).pDiffuse->GetSamplerState().GetAddressOf()
+                    );
+
+                    m_immediateContext->DrawIndexed(
+                        renderable->GetMesh(j).uNumIndices,
+                        renderable->GetMesh(j).uBaseIndex,
+                        renderable->GetMesh(j).uBaseVertex
+                    );
+                }
+            }
+            else {
+                m_immediateContext->DrawIndexed(renderable->GetNumIndices(), 0, 0);
+            }
+        }
+
         m_swapChain->Present(0, 0);
 
         m_immediateContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
@@ -878,6 +1015,81 @@ namespace library
         for (auto& voxel : m_scenes[pszSceneName]->GetVoxels()) {
             voxel->SetPixelShader(m_pixelShaders[pszPixelShaderName]);
         }
+        return S_OK;
+    }
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderer::SetVertexShaderOfModel
+
+      Summary:  Sets the pixel shader for a model
+
+      Args:     PCWSTR pszModelName
+                  Key of the model
+                PCWSTR pszVertexShaderName
+                  Key of the vertex shader
+
+      Modifies: [m_renderables].
+
+      Returns:  HRESULT
+                  Status code
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    HRESULT Renderer::SetVertexShaderOfModel(_In_ PCWSTR pszModelName, _In_ PCWSTR pszVertexShaderName) {
+        if (!m_vertexShaders[pszVertexShaderName])
+        {
+            return E_FAIL;
+        }
+
+        bool isModelFound = false;
+        for (auto& model : m_models) {
+            if (wcscmp(model.first, pszModelName) == 0) {
+                isModelFound = true;
+                model.second->SetVertexShader(m_vertexShaders[pszVertexShaderName]);
+                break;
+            }
+        }
+
+        if (!isModelFound) {
+            return E_FAIL;
+        }
+        
+        return S_OK;
+    }
+
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderer::SetPixelShaderOfModel
+
+      Summary:  Sets the pixel shader for a model
+
+      Args:     PCWSTR pszModelName
+                  Key of the model
+                PCWSTR pszPixelShaderName
+                  Key of the pixel shader
+
+      Modifies: [m_renderables].
+
+      Returns:  HRESULT
+                  Status code
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    HRESULT Renderer::SetPixelShaderOfModel(_In_ PCWSTR pszModelName, _In_ PCWSTR pszPixelShaderName) {
+        if (!m_pixelShaders[pszPixelShaderName])
+        {
+            return E_FAIL;
+        }
+
+        bool isModelFound = false;
+        for (auto& model : m_models) {
+            if (wcscmp(model.first, pszModelName) == 0) {
+                isModelFound = true;
+                model.second->SetPixelShader(m_pixelShaders[pszPixelShaderName]);
+                break;
+            }
+        }
+
+        if (!isModelFound) {
+            return E_FAIL;
+        }
+
         return S_OK;
     }
 
