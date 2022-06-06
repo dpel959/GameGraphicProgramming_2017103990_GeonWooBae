@@ -171,6 +171,11 @@ namespace library
         for (auto voxel : m_voxels)
         {
             HRESULT hr = voxel->Initialize(pDevice, pImmediateContext);
+            
+            for (int i = 0; i < voxel->GetNumMaterials(); ++i)
+            {
+                voxel->GetMaterial(i)->Initialize(pDevice, pImmediateContext);
+            }
             if (FAILED(hr))
             {
                 return hr;
@@ -216,10 +221,15 @@ namespace library
             {
                 return hr;
             }
+
+            for (int i = 0; i < it->second->GetNumMaterials(); ++i)
+            {
+                it->second->GetMaterial(i)->Initialize(pDevice, pImmediateContext);
+            }
         }
 
         if (m_skyBox) {
-           HRESULT hr =  m_skyBox->Initialize(pDevice, pImmediateContext);
+           HRESULT hr = m_skyBox->Initialize(pDevice, pImmediateContext);
            if (FAILED(hr)) return hr;
         }
 

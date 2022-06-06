@@ -23,7 +23,7 @@ namespace library
         , m_cubeMapFileName(cubeMapFilePath)
         , m_scale(scale)
     {
-        m_outputColor = XMFLOAT4(0.0f, 0.0f, 1.0f, 0.4f);
+        m_outputColor = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -45,16 +45,27 @@ namespace library
         m_aMeshes[0].uMaterialIndex = 0;
         m_pScene->mMeshes[0]->mMaterialIndex = 0;
 
-        std::filesystem::path parentDirectory = m_cubeMapFileName.parent_path();
+        //std::string szName = m_cubeMapFileName.string();
+        //std::wstring pwszName(szName.length(), L' ');
+        //std::copy(szName.begin(), szName.end(), pwszName.begin());
+        //m_aMaterials[0] = std::make_shared<Material>(pwszName);
+        m_aMaterials[0]->pDiffuse = std::make_shared<Texture>(m_cubeMapFileName);
+        hr = m_aMaterials[0]->pDiffuse->Initialize(pDevice, pImmediateContext);
 
-        //initialize 넣어보자
-        const aiMaterial* pMaterial = m_pScene->mMaterials[0];
+        if (FAILED(hr))
+        {
+            OutputDebugString(L"Error loading diffuse texture \"");
+            OutputDebugString(m_cubeMapFileName.c_str());
+            OutputDebugString(L"\"\n");
 
-        std::string szName = m_cubeMapFileName.string();
-        std::wstring pwszName(szName.length(), L' ');
-        std::copy(szName.begin(), szName.end(), pwszName.begin());
+            return hr;
+        }
 
-        hr = loadDiffuseTexture(pDevice, pImmediateContext, parentDirectory, pMaterial, 0);
+        OutputDebugString(L"Loaded diffuse texture \"");
+        OutputDebugString(m_cubeMapFileName.c_str());
+        OutputDebugString(L"\"\n");
+
+        hr = m_aMaterials[0]->Initialize(pDevice, pImmediateContext);
         if (FAILED(hr)) return hr;
 
         return S_OK;

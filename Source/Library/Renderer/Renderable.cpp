@@ -114,7 +114,8 @@ namespace library
 
         CBChangesEveryFrame cb = {
             .World = XMMatrixTranspose(m_world),
-            .OutputColor = m_outputColor
+            .OutputColor = m_outputColor,
+            .HasNormalMap = HasNormalMap()
         };
 
         D3D11_SUBRESOURCE_DATA cData = {
@@ -125,23 +126,26 @@ namespace library
 
         if (FAILED(hr)) return hr;
 
-        if (HasTexture() && m_aNormalData.empty()) {
-            calculateNormalMapVectors();
+        if (HasNormalMap()) {
+            if (HasTexture() && m_aNormalData.empty()) {
+                calculateNormalMapVectors();
+            }
+
+            bd =
+            {
+                .ByteWidth = static_cast<UINT>(sizeof(NormalData) * m_aNormalData.size()),
+                .Usage = D3D11_USAGE_DEFAULT,
+                .BindFlags = D3D11_BIND_VERTEX_BUFFER,
+                .CPUAccessFlags = 0,
+            };
+
+            InitData = {
+                .pSysMem = m_aNormalData.data()
+            };
+
+            hr = pDevice->CreateBuffer(&bd, &InitData, GetNormalBuffer().GetAddressOf());
         }
 
-        bd =
-        {
-            .ByteWidth = static_cast<UINT>(sizeof(NormalData) * m_aNormalData.size()),
-            .Usage = D3D11_USAGE_DEFAULT,
-            .BindFlags = D3D11_BIND_VERTEX_BUFFER,
-            .CPUAccessFlags = 0,
-        };
-
-        InitData = {
-            .pSysMem = m_aNormalData.data()
-        };
-
-        hr = pDevice->CreateBuffer(&bd, &InitData, GetNormalBuffer().GetAddressOf());
 
         return S_OK;
     }

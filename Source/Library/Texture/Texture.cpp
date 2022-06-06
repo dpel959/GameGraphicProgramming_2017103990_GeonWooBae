@@ -69,8 +69,6 @@ namespace library
                 .AddressV = D3D11_TEXTURE_ADDRESS_WRAP,
                 .AddressW = D3D11_TEXTURE_ADDRESS_WRAP,
                 .ComparisonFunc = D3D11_COMPARISON_NEVER,
-                .MinLOD = 0,
-                .MaxLOD = D3D11_FLOAT32_MAX
                 /*--------------------------------------------------------------------
                   TODO: Initialize the trilinear wrap sampler (remove the comment)
                 --------------------------------------------------------------------*/
@@ -91,8 +89,6 @@ namespace library
                 .AddressV = D3D11_TEXTURE_ADDRESS_CLAMP,
                 .AddressW = D3D11_TEXTURE_ADDRESS_CLAMP,
                 .ComparisonFunc = D3D11_COMPARISON_NEVER,
-                .MinLOD = 0,
-                .MaxLOD = D3D11_FLOAT32_MAX
                 /*--------------------------------------------------------------------
                   TODO: Initialize the trilinear clamp sampler (remove the comment)
                 --------------------------------------------------------------------*/

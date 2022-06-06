@@ -10,8 +10,10 @@
 //--------------------------------------------------------------------------------------
 static const unsigned int MAX_NUM_BONES = 256u;
 
-Texture2D txDiffuse : register(t0);
-SamplerState samLinear : register(s0);
+Texture2D txDiffuse : register( t0 );
+Texture2D txNormal : register( t1 );
+SamplerState samLinear : register( s0 );
+SamplerState samNormal : register( s1 );
 
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables

@@ -9,9 +9,9 @@
 // Global Variables
 //--------------------------------------------------------------------------------------
 Texture2D txDiffuse : register( t0 );
-//Texture2D txNormal : register( t1 );
+Texture2D txNormal : register( t1 );
 SamplerState samLinear : register( s0 );
-//SamplerState samNormal : register( s1 );
+SamplerState samNormal : register( s1 );
 
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables
@@ -87,7 +87,6 @@ PS_INPUT VSCubeMap(VS_INPUT input)
 
 	return output;
 }
-
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------

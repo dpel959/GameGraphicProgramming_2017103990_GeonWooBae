@@ -630,6 +630,7 @@ namespace library
 
             if (voxel->HasNormalMap()) {
                 for (UINT j = 0u; j < voxel->GetNumMeshes(); j++) {
+
                     m_immediateContext->PSSetShaderResources(
                         1,
                         1,
