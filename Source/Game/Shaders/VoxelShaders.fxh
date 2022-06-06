@@ -9,8 +9,10 @@
 //--------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------
-Texture2D txDiffuse[2] : register( t0 );
-SamplerState samLinear[2] : register( s0 );
+Texture2D txDiffuse : register( t0 );
+Texture2D txNormal : register( t1 );
+SamplerState samLinear : register( s0 );
+SamplerState samNormal : register( s1 );
 
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables
@@ -58,6 +60,7 @@ cbuffer cbLights : register( b3 )
 {
 	float4 LightPositions[NUM_LIGHTS];
 	float4 LightColors[NUM_LIGHTS];
+	float4 LightAttenuationDistance[NUM_LIGHTS];
 };
 
 //--------------------------------------------------------------------------------------
@@ -106,7 +109,7 @@ PS_INPUT VSVoxel(VS_INPUT input)
 	output.Pos = mul(output.Pos, Projection);
 	output.Tex = input.TexCoord;
 	output.Norm = normalize(mul(input.Normal, (float3x3)input.Transform));
-	output.Norm = normalize(mul(float4(output.Norm, 1), World).xyz);
+	output.Norm = normalize(mul(float4(output.Norm, 1.0f), World).xyz);
 	output.WorldPos = input.Position;
 	output.WorldPos = mul(output.WorldPos, input.Transform);
 	output.WorldPos = mul(output.WorldPos, World);
@@ -127,14 +130,13 @@ float4 PSVoxel(PS_INPUT input) : SV_Target
 	float3 toViewDir = normalize((CameraPosition - input.WorldPos).xyz);
 	float3 normal = normalize(input.Norm);
 	
-	float3 ambient_term = float3(0.1f, 0.1f, 0.1f);
 	float3 ambient = float3(0, 0, 0);
 	float3 diffuse = float3(0, 0, 0);
 	float3 specular = float3(0, 0, 0);
 		
 	if(HasNormalMap)
 	{
-		float4 bumpMap = txDiffuse[1].Sample(samLinear[1], input.Tex);
+		float4 bumpMap = txNormal.Sample(samNormal, input.Tex);
 
 		bumpMap = (bumpMap * 2.0f) - 1.0f;
 
@@ -145,19 +147,20 @@ float4 PSVoxel(PS_INPUT input) : SV_Target
 
 	for (uint i = 0; i < NUM_LIGHTS; ++i)
 	{
-		ambient += ambient_term * LightColors[i].xyz;
+		float distance_square = dot(input.WorldPos.xyz - LightPositions[i].xyz, input.WorldPos.xyz - LightPositions[i].xyz);
+
+		float attenuation =  LightAttenuationDistance[i].z / (distance_square + 0.000001);
+
+		ambient += float4(float3(0.1f,0.1f,0.1f)*LightColors[i].xyz, 1.0f) * attenuation;
 
 		float3 fromLightDir = normalize((input.WorldPos - LightPositions[i]).xyz);
 	
-		diffuse += max(dot(normal, -fromLightDir), 0) * LightColors[i].xyz;
+		diffuse += max(dot(normal, -fromLightDir), 0) * LightColors[i].xyz * attenuation;
 		
 		float3 refDir = reflect(fromLightDir, normal);
-		specular += pow(max(dot(refDir, toViewDir), 0), 20) * LightColors[i].xyz;
+
+		specular += pow(max(dot(refDir, toViewDir), 0), 20) * LightColors[i].xyz * attenuation;
 	}
 
-	ambient = ambient * OutputColor.xyz;
-	diffuse = diffuse * OutputColor.xyz;
-	specular = specular * OutputColor.xyz;
-
-	return float4(saturate(ambient + diffuse + specular), 1) * txDiffuse[0].Sample(samLinear[0], input.Tex);
+	return float4(saturate(ambient + diffuse + specular), 1) * txDiffuse.Sample(samLinear, input.Tex);
 }

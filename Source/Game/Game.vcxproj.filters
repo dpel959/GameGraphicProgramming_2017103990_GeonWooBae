@@ -70,10 +70,21 @@
     <None Include="Shaders\SkinningShaders.fxh">
       <Filter>리소스 파일\Shaders</Filter>
     </None>
+    <None Include="Shaders\CubeMap.fxh">
+      <Filter>리소스 파일\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="seafloor.dds">
       <Filter>리소스 파일</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\CubeMap_PS.hlsl">
+      <Filter>리소스 파일\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\CubeMap_VS.hlsl">
+      <Filter>리소스 파일\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
