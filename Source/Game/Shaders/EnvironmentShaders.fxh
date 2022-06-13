@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------------------
-// File: CubeMap.fxh
+// File: EnvironmentShaders.fxh
 //
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License (MIT).
@@ -8,10 +8,8 @@
 //--------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------
-Texture2D txDiffuse : register( t0 );
-Texture2D txNormal : register( t1 );
-SamplerState samLinear : register( s0 );
-SamplerState samNormal : register( s1 );
+TextureCube environmentMap : register( t0 );
+SamplerState textureSampler : register( s0 );
 
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables
@@ -71,9 +69,9 @@ struct VS_INPUT
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 struct PS_INPUT
 {
-	float4 Position : POSITION;
+	float4 Position : SV_POSITION;
 	float3 TexCoord : TEXCOORD0;
-	float3 ReflectionVector : REFLECTION;
+	float3 ReflectionVec : REFLECTION;
 };
 
 //--------------------------------------------------------------------------------------
@@ -89,11 +87,11 @@ PS_INPUT VSEnvironmentMap(VS_INPUT input)
 	output.Position = mul(output.Position, Projection);
 	output.TexCoord = input.TexCoord;
 	
-	float3 worldPosition = mul(input.Position, World).xyz;
-	float3 incident = normalize(worldPosition - CameraPosition);
-	float3 normal = normalize(mul(float4(IN.Normal, 0), World).xyz);
+	float3 worldPos = mul(input.Position, World).xyz;
+	float3 incident = normalize(worldPos - CameraPosition);
+	float3 normal = normalize(mul(float4(input.Normal, 0), World).xyz);
 
-	output.ReflectionVector = reflect(incident, normal);
+	output.ReflectionVec = reflect(incident, normal);
 
 	return output;
 }
@@ -104,14 +102,12 @@ PS_INPUT VSEnvironmentMap(VS_INPUT input)
 
 float4 PSEnvironmentMap(PS_INPUT input) : SV_TARGET
 {
-//	float4 OUT = (float4)0;
+	float4 output = (float4)0;
 
-//	float4 color = ColorMap.Sample(TextureSampler, IN.TextureCoordinates);
-//	float3 ambient = AmbientColor * color.rgb;
-//	float3 environment = EnvironmentColor * EnvironmentMap.Sample(TextureSampler, IN.ReflectionVector).rgb;
+	float3 environment = environmentMap.Sample(textureSampler, input.ReflectionVec).rgb;
 
-//	OUT.rgb = saturate(lerp(ambient, environment, ReflectionAmount));
-//	OUT.a = color.a;
+	output.rgb = saturate(lerp(ambient, environment, ReflectionAmount));
+	output.a = color.a;
 
-//	return OUT;
+	return output;
 }

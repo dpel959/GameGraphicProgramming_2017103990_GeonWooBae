@@ -236,7 +236,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
     //Environment Map
-    std::shared_ptr<library::VertexShader> environmentMapVertexShader = std::make_shared<library::VertexShader>(L"Shaders/Shaders.fxh", "VSEnvironmentMap", "vs_5_0");
+    std::shared_ptr<library::VertexShader> environmentMapVertexShader = std::make_shared<library::VertexShader>(L"Shaders/PhongShaders.fxh", "VSEnvironmentMap", "vs_5_0");
     if (FAILED(mainScene->AddVertexShader(L"EnvironmentMapShader", environmentMapVertexShader)))
     {
         return 0;
@@ -267,7 +267,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
     //Environment Map
-    std::shared_ptr<library::PixelShader> environmentMapPixelShader = std::make_shared<library::PixelShader>(L"Shaders/Shaders.fxh", "PSEnvironmentMap", "ps_5_0");
+    std::shared_ptr<library::PixelShader> environmentMapPixelShader = std::make_shared<library::PixelShader>(L"Shaders/PhongShaders.fxh", "PSEnvironmentMap", "ps_5_0");
     if (FAILED(mainScene->AddPixelShader(L"EnvironmentMapShader", environmentMapPixelShader)))
     {
         return 0;
@@ -292,28 +292,44 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     }
 
 
-    /*--------------------------------------------------------------------
-      TODO: Example model definition (remove the comment)
-      example:
-        std::shared_ptr<library::Model> sponza = std::make_shared<library::Model>(L"Content/Sponza/sponza.obj");
-        sponza->Scale(0.1f, 0.1f, 0.1f);
-        if (FAILED(mainScene->AddModel(L"Sponza", sponza)))
-        {
-            return 0;
-        }
-        //if (FAILED(mainScene->SetVertexShaderOfModel(L"Sponza", L"PhongShader")))
-        if (FAILED(mainScene->SetVertexShaderOfModel(L"Sponza", L"EnvironmentMapShader")))
-        {
-            return 0;
-        }
-        //if (FAILED(mainScene->SetPixelShaderOfModel(L"Sponza", L"PhongShader")))
-        if (FAILED(mainScene->SetPixelShaderOfModel(L"Sponza", L"EnvironmentMapShader")))
-        {
-            return 0;
-        }
-    --------------------------------------------------------------------*/
+      //TODO: Example model definition (remove the comment)
+      //example:
+     //std::shared_ptr<library::Model> sponza = std::make_shared<library::Model>(L"Content/Sponza/sponza.obj");
+     //sponza->Scale(0.1f, 0.1f, 0.1f);
+     //if (FAILED(mainScene->AddModel(L"Sponza", sponza)))
+     //{
+     //    return 0;
+     //}
+     //   //if (FAILED(mainScene->SetVertexShaderOfModel(L"Sponza", L"PhongShader")))
+     //if (FAILED(mainScene->SetVertexShaderOfModel(L"Sponza", L"EnvironmentMapShader")))
+     //{
+     //    return 0;
+     //}
+     //   //if (FAILED(mainScene->SetPixelShaderOfModel(L"Sponza", L"PhongShader")))
+     //if (FAILED(mainScene->SetPixelShaderOfModel(L"Sponza", L"EnvironmentMapShader")))
+     //{
+     //    return 0;
+     //}
 
     XMFLOAT4 color;
+    XMStoreFloat4(&color, Colors::White);
+
+     std::shared_ptr<Cube> envCube = std::make_shared<Cube>(color);
+     envCube->Translate(XMVectorSet(10.0f, 30.0f, 0.0f, 0.0f));
+     if (FAILED(mainScene->AddRenderable(L"EnvCube", envCube)))
+     {
+         return 0;
+     }
+     if (FAILED(mainScene->SetVertexShaderOfRenderable(L"EnvCube", L"EnvironmentMapShader")))
+     {
+         return 0;
+     }
+     if (FAILED(mainScene->SetPixelShaderOfRenderable(L"EnvCube", L"EnvironmentMapShader")))
+     {
+         return 0;
+     }
+
+    //XMFLOAT4 color;
     XMStoreFloat4(&color, Colors::Orange);
 
     std::shared_ptr<library::PointLight> directionalLight = std::make_shared<library::PointLight>(

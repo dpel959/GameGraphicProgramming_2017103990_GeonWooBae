@@ -8,7 +8,7 @@
 //--------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------
-Texture2D txDiffuse : register( t0 );
+TextureCube txDiffuse : register( t0 );
 Texture2D txNormal : register( t1 );
 SamplerState samLinear : register( s0 );
 SamplerState samNormal : register( s1 );
@@ -69,7 +69,7 @@ struct VS_INPUT
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 struct PS_INPUT
 {
-	float4 Position : POSITION;
+	float4 Position : SV_POSITION;
 	float3 TexCoord : TEXCOORD0;
 };
 

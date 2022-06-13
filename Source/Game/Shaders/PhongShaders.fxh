@@ -11,8 +11,10 @@
 //--------------------------------------------------------------------------------------
 Texture2D txDiffuse : register( t0 );
 Texture2D txNormal : register( t1 );
+TextureCube skyMap : register( t2 );
 SamplerState samLinear : register( s0 );
 SamplerState samNormal : register( s1 );
+SamplerState samSkyMap : register( s2 );
 
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables
@@ -78,6 +80,13 @@ struct VS_PHONG_INPUT
 	row_major matrix mTransform : INSTANCE_TRANSFORM;
 };
 
+struct VS_ENV_INPUT
+{
+	float4 Position : POSITION;
+	float2 TexCoord : TEXCOORD0;
+	float3 Normal : NORMAL;
+};
+
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
   Struct:   PS_PHONG_INPUT
 
@@ -103,6 +112,13 @@ C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 struct PS_LIGHT_CUBE_INPUT
 {
 	float4 Position : SV_POSITION;
+};
+
+struct PS_ENV_INPUT
+{
+	float4 Position : SV_POSITION;
+	float2 TexCoord : TEXCOORD0;
+	float3 ReflectionVec : REFLECTION;
 };
 
 //--------------------------------------------------------------------------------------
@@ -139,6 +155,23 @@ PS_LIGHT_CUBE_INPUT VSLightCube(VS_PHONG_INPUT input)
 	return output;
 }
 
+PS_ENV_INPUT VSEnvironmentMap(VS_ENV_INPUT input)
+{
+	PS_ENV_INPUT output = (PS_ENV_INPUT)0;
+	output.Position = input.Position;
+	output.Position = mul(output.Position, World);
+	output.Position = mul(output.Position, View);
+	output.Position = mul(output.Position, Projection);
+	output.TexCoord = input.TexCoord;
+	
+	float3 worldPos = mul(input.Position, World).xyz;
+	float3 incident = normalize(worldPos - CameraPosition);
+	float3 normal = normalize(mul(float4(input.Normal, 0), World).xyz);
+
+	output.ReflectionVec = reflect(incident, normal);
+
+	return output;
+}
 
 //--------------------------------------------------------------------------------------
 // Pixel Shader
@@ -186,4 +219,10 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
 float4 PSLightCube(PS_LIGHT_CUBE_INPUT input) : SV_Target
 {
 	return OutputColor;
+}
+
+float4 PSEnvironmentMap(PS_ENV_INPUT input) : SV_TARGET
+{
+	float4 environment = skyMap.Sample(samSkyMap, input.ReflectionVec);
+	return environment;
 }

@@ -134,16 +134,16 @@ float4 PSVoxel(PS_INPUT input) : SV_Target
 	float3 diffuse = float3(0, 0, 0);
 	float3 specular = float3(0, 0, 0);
 		
-	if(HasNormalMap)
-	{
-		float4 bumpMap = txNormal.Sample(samNormal, input.Tex);
+	//if(HasNormalMap)
+	//{
+	//	float4 bumpMap = txNormal.Sample(samNormal, input.Tex);
 
-		bumpMap = (bumpMap * 2.0f) - 1.0f;
+	//	bumpMap = (bumpMap * 2.0f) - 1.0f;
 
-		float3 bumpNormal = (bumpMap.x * input.Tangent) + (bumpMap.y * input.Bitangent) + (bumpMap.z * normal);
+	//	float3 bumpNormal = (bumpMap.x * input.Tangent) + (bumpMap.y * input.Bitangent) + (bumpMap.z * normal);
 
-		normal = normalize(bumpNormal);
-	}
+	//	normal = normalize(bumpNormal);
+	//}
 
 	for (uint i = 0; i < NUM_LIGHTS; ++i)
 	{
@@ -162,5 +162,5 @@ float4 PSVoxel(PS_INPUT input) : SV_Target
 		specular += pow(max(dot(refDir, toViewDir), 0), 20) * LightColors[i].xyz * attenuation;
 	}
 
-	return float4(saturate(ambient + diffuse + specular), 1) * txDiffuse.Sample(samLinear, input.Tex);
+	return float4(saturate(ambient + diffuse + specular), 1);
 }

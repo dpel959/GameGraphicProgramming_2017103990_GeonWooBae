@@ -548,6 +548,21 @@ namespace library
                 }
             }
 
+            // for environment cube
+            m_immediateContext->PSSetShaderResources(
+                2,
+                1,
+                mainScene->GetSkyBox()->GetMaterial(mainScene->GetSkyBox()->GetMesh(0).uMaterialIndex)->pDiffuse->GetTextureResourceView().GetAddressOf()
+            );
+
+            eTextureSamplerType textureSamplerType = mainScene->GetSkyBox()->GetMaterial(mainScene->GetSkyBox()->GetMesh(0).uMaterialIndex)->pDiffuse->GetSamplerType();
+
+            m_immediateContext->PSSetSamplers(
+                2,
+                1,
+                Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf()
+            );
+
             if (renderable->HasTexture()) {
                 for (UINT j = 0u; j < renderable->GetNumMeshes(); j++) {
                     m_immediateContext->PSSetShaderResources(
@@ -749,7 +764,6 @@ namespace library
 
             m_immediateContext->VSSetConstantBuffers(2, 1, renderable->GetConstantBuffer().GetAddressOf());
             m_immediateContext->PSSetConstantBuffers(2, 1, renderable->GetConstantBuffer().GetAddressOf());
-
 
             m_immediateContext->VSSetConstantBuffers(3, 1, m_cbLights.GetAddressOf());
             m_immediateContext->PSSetConstantBuffers(3, 1, m_cbLights.GetAddressOf());

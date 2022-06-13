@@ -73,7 +73,7 @@
     <None Include="Shaders\CubeMap.fxh">
       <Filter>리소스 파일\Shaders</Filter>
     </None>
-    <None Include="Shaders\EnvironmentShader.fxh">
+    <None Include="Shaders\EnvironmentShaders.fxh">
       <Filter>리소스 파일\Shaders</Filter>
     </None>
   </ItemGroup>
